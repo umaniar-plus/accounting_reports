@@ -4,7 +4,7 @@
     'license': 'LGPL-3',
     'summary': 'Custom General Ledger Report',
     'category': 'Accounting',
-    'author': 'Areterix Technologies',
+    'author': 'Areterix Technologies1',
     'website': 'https://www.areterix.com/',
     'depends': ['account', 'web'],
     'data': [
