@@ -60,14 +60,14 @@
                             <t t-set="account_name" t-value="account.get('accountName', account.get('account_name', account.get('name', account.get('account_id', [False, 'N/A'])[1])))"/>
 
                             <tr style="background-color: #ffffff; font-weight: bold; font-size:15px;">
-                                <td colspan="8" style="border:1px solid #000; padding:8px; text-align:left;">
+                                <td colspan="7" style="border:1px solid #000; padding:8px; text-align:left;">
                                     <t t-esc="account_name"/>
                                 </td>
                             </tr>
                             <tr style="background-color: #f0f0f0; font-weight: bold;">
                                 <td style="border:1px solid #000; padding:5px; text-align:center;">Journal</td>
                                 <td style="border:1px solid #000; padding:5px; text-align:center;">Date</td>
-                                <td style="border:1px solid #000; padding:5px; text-align:center;">Communication</td>
+                                <!-- <td style="border:1px solid #000; padding:5px; text-align:center;">Communication</td> -->
                                 <td style="border:1px solid #000; padding:5px; text-align:center;">Partner</td>
                                 <td style="border:1px solid #000; padding:5px; text-align:center;">Currency</td>
                                 <td style="border:1px solid #000; padding:5px; text-align:center;">Debit</td>
@@ -86,7 +86,7 @@
                                         </t>
                                     </td>
                                     <td style="border:1px solid #000; padding:5px; text-align:center;"><t t-esc="'{}/{}/{}'.format(line.get('date', '').split('-')[2], line.get('date', '').split('-')[1], line.get('date', '').split('-')[0]) if line.get('date') else ''"/></td>
-                                    <td style="border:1px solid #000; padding:5px; text-align:center;"><t t-esc="line.get('name') or line.get('move_name') or ''"/></td>
+                                    <!-- <td style="border:1px solid #000; padding:5px; text-align:center;"><t t-esc="line.get('name') or line.get('move_name') or ''"/></td> -->
                                     <td style="border:1px solid #000; padding:5px; text-align:center;">
                                         <t t-if="line.get('partner_id') and len(line['partner_id']) > 1">
                                             <t t-esc="line['partner_id'][1]"/>
@@ -104,7 +104,7 @@
                             </t>
 
                             <tr style="background-color:#f0f0f0; font-weight:bold;">
-                                <td colspan="5" style="border:1px solid #000; padding:5px; text-align:right;">Total <t t-esc="account_name"/></td>
+                                <td colspan="4" style="border:1px solid #000; padding:5px; text-align:right;">Total <t t-esc="account_name"/></td>
                                 <t t-set="account_totals" t-value="account.get('totals', account)"/>
                                 <td style="border:1px solid #000; padding:5px; text-align:right; white-space:nowrap;"><t t-esc="'₹ {:,.2f}'.format(account_totals.get('debit', 0))"/></td>
                                 <td style="border:1px solid #000; padding:5px; text-align:right; white-space:nowrap;"><t t-esc="'₹ {:,.2f}'.format(account_totals.get('credit', 0))"/></td>
@@ -113,7 +113,7 @@
                         </t>
 
                         <tr style="font-weight:bold; background-color: #ffffff;">
-                            <td colspan="5" style="border:1px solid #000; padding:5px; text-align:center;">TOTAL</td>
+                            <td colspan="4" style="border:1px solid #000; padding:5px; text-align:center;">TOTAL</td>
                             <td style="border:1px solid #000; padding:5px; text-align:right;"><t t-esc="'₹ {:,.2f}'.format(data.get('totals', {}).get('debit',0))"/></td>
                             <td style="border:1px solid #000; padding:5px; text-align:right;"><t t-esc="'₹ {:,.2f}'.format(data.get('totals', {}).get('credit',0))"/></td>
                             <td style="border:1px solid #000; padding:5px; text-align:right;"><t t-esc="'₹ {:,.2f}'.format(data.get('totals', {}).get('balance',0))"/></td>

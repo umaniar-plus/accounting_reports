@@ -19,41 +19,41 @@ class partnerLedgerExport(models.TransientModel):
             amount = float(amount or 0)
         except Exception:
             amount = 0.0
-    
+
         formatted = f"{amount:.{precision}f}"
-    
+
         if "." in formatted:
             int_part, dec_part = formatted.split(".")
         else:
             int_part, dec_part = formatted, ""
-    
+
         sign = ""
         if int_part.startswith("-"):
             sign = "-"
             int_part = int_part[1:]
-    
+
         if len(int_part) > 3:
             last_three = int_part[-3:]
             other = int_part[:-3]
-    
+
             groups = []
             while len(other) > 2:
                 groups.insert(0, other[-2:])
                 other = other[:-2]
-    
+
             if other:
                 groups.insert(0, other)
-    
+
             int_part = ",".join(groups) + "," + last_three
-    
+
         result = sign + int_part
-    
+
         if precision:
             result += "." + dec_part
-    
+
         if currency_symbol and currency_symbol != "False":
             return f"{currency_symbol} {result}"
-    
+
         return result
 
     def _generate_pl_filename(self, data, file_ext="pdf"):
@@ -343,17 +343,25 @@ class partnerLedgerExport(models.TransientModel):
                 subtotal_balance = 0
                 
                 running_balance = 0
+
                 for line in partner.get('lines', []):
+                
                     debit = line.get('debit', 0)
                     credit = line.get('credit', 0)
-
-                    running_balance += debit - credit
-                    balance = running_balance
+                
+                    if line.get('initial_balance'):
+                        balance = line.get('balance', 0)
+                        running_balance = balance
+                    else:
+                        running_balance += debit - credit
+                        balance = running_balance
                 
                     if (
                         debit == 0 and
                         credit == 0 and
-                        balance == 0
+                        balance == 0 and
+                        line.get('move_name') != 'Initial Balance'
+                        
                     ):
                         continue
                     

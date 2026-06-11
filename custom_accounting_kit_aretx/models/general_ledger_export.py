@@ -230,18 +230,18 @@ class GeneralLedgerExport(models.TransientModel):
             worksheet.set_column('A:A', 40)  # Journal
             worksheet.set_column('B:B', 12)  # Date
             # worksheet.set_column('C:C', 40)  # Communication
-            worksheet.set_column('D:D', 20)  # Partner
-            worksheet.set_column('E:E', 10)  # Currency
-            worksheet.set_column('F:F', 15)  # Debit
-            worksheet.set_column('G:G', 15)  # Credit
-            worksheet.set_column('H:H', 15)  # Balance
+            worksheet.set_column('C:C', 20)  # Partner
+            worksheet.set_column('D:D', 10)  # Currency
+            worksheet.set_column('E:E', 15)  # Debit
+            worksheet.set_column('F:F', 15)  # Credit
+            worksheet.set_column('G:G', 15)  # Balance
 
             period_text = self.get_period_text(data)
 
             # Title & filter info
-            worksheet.merge_range('A1:H1', 'General Ledger Report', title_format)
+            worksheet.merge_range('A1:G1', 'General Ledger Report', title_format)
             worksheet.merge_range(
-                'A2:H2',
+                'A2:G2',
                 period_text,
                 workbook.add_format({'align': 'center', 'font_size': 12, 'italic': True})
             )
@@ -250,7 +250,7 @@ class GeneralLedgerExport(models.TransientModel):
             worksheet.set_row(2, 5)  # Empty row with reduced height
 
             # Headers
-            headers = ['Journal', 'Date', 'Communication', 'Partner', 'Currency', 'Debit', 'Credit', 'Balance']
+            headers = ['Journal', 'Date', 'Partner', 'Currency', 'Debit', 'Credit', 'Balance']
             for col, header in enumerate(headers):
                 worksheet.write(4, col, header, header_format)
 
@@ -270,7 +270,7 @@ class GeneralLedgerExport(models.TransientModel):
             for account_id, group in grouped_data.items():
                 # Account header
                 account_name = group.get('accountName', f'Account {account_id}')
-                worksheet.merge_range(row, 0, row, 7, f"Account: {account_name}", account_format)
+                worksheet.merge_range(row, 0, row, 6, f"Account: {account_name}", account_format)
 
                 row += 1
 
@@ -280,25 +280,25 @@ class GeneralLedgerExport(models.TransientModel):
                     account_name = group.get('accountName', f'Account {account_id}')
 
                     worksheet.merge_range(
-                        row, 0, row, 4,
+                        row, 0, row, 3,
                         f"Total {account_name}",
                         workbook.add_format({'bold': True, 'border': 1})
                     )
 
                     worksheet.write(
-                        row, 5,
+                        row, 4,
                         group.get('totals', {}).get('debit', 0),
                         workbook.add_format({'num_format': '#,##0.00', 'bold': True, 'border': 1})
                     )
 
                     worksheet.write(
-                        row, 6,
+                        row, 5,
                         group.get('totals', {}).get('credit', 0),
                         workbook.add_format({'num_format': '#,##0.00', 'bold': True, 'border': 1})
                     )
 
                     worksheet.write(
-                        row, 7,
+                        row, 6,
                         group.get('totals', {}).get('balance', 0),
                         workbook.add_format({'num_format': '#,##0.00', 'bold': True, 'border': 1})
                     )
@@ -325,17 +325,6 @@ class GeneralLedgerExport(models.TransientModel):
                     worksheet.write(row, 0, line.get('move_name', ''), journal_format)
                     worksheet.write(row,1,datetime.strptime(str(line.get('date')),"%Y-%m-%d").strftime("%d/%m/%Y") if line.get('date') else '',journal_format)
                
-                    communication = ""
-
-                    if line.get('move_id'):
-                        if isinstance(line['move_id'], list) and len(line['move_id']) > 1:
-                            communication += str(line['move_id'][1])
-                    
-                    if line.get('name'):
-                        if communication:
-                            communication += "\n"
-                        communication += str(line['name'])
-                    worksheet.write(row, 35, communication, journal_format)
 
                     # Handle partner name
                     partner = ''
@@ -344,7 +333,7 @@ class GeneralLedgerExport(models.TransientModel):
                             partner = line['partner_id'][1]
                         elif isinstance(line['partner_id'], str):
                             partner = line['partner_id']
-                    worksheet.write(row, 3, partner, journal_format)
+                    worksheet.write(row, 2, partner, journal_format)
 
                     # Handle currency
                     currency = ''
@@ -353,15 +342,15 @@ class GeneralLedgerExport(models.TransientModel):
                             currency = line['currency_id'][1]
                         elif isinstance(line['currency_id'], str):
                             currency = line['currency_id']
-                    worksheet.write(row, 4, currency, journal_format)
+                    worksheet.write(row, 3, currency, journal_format)
 
                     debit = line.get('debit', 0)
                     credit = line.get('credit', 0)
                     balance = line.get('balance', 0)
 
-                    worksheet.write(row, 5, debit, number_format)
-                    worksheet.write(row, 6, credit, number_format)
-                    worksheet.write(row, 7, balance, number_format)
+                    worksheet.write(row, 4, debit, number_format)
+                    worksheet.write(row, 5, credit, number_format)
+                    worksheet.write(row, 6, balance, number_format)
 
                     subtotal_debit += debit
                     subtotal_credit += credit
@@ -370,10 +359,10 @@ class GeneralLedgerExport(models.TransientModel):
                     row += 1
 
                 # Subtotal row for the account
-                worksheet.merge_range(row, 0, row, 4, f"Total {account_name}", workbook.add_format({'bold': True, 'border': 1}))
-                worksheet.write(row, 5, subtotal_debit, workbook.add_format({'num_format': '#,##0.00', 'bold': True, 'border': 1}))
-                worksheet.write(row, 6, subtotal_credit, workbook.add_format({'num_format': '#,##0.00', 'bold': True, 'border': 1}))
-                worksheet.write(row, 7, subtotal_balance, workbook.add_format({'num_format': '#,##0.00', 'bold': True, 'border': 1}))
+                worksheet.merge_range(row, 0, row, 3, f"Total {account_name}", workbook.add_format({'bold': True, 'border': 1}))
+                worksheet.write(row, 4, subtotal_debit, workbook.add_format({'num_format': '#,##0.00', 'bold': True, 'border': 1}))
+                worksheet.write(row, 5, subtotal_credit, workbook.add_format({'num_format': '#,##0.00', 'bold': True, 'border': 1}))
+                worksheet.write(row, 6, subtotal_balance, workbook.add_format({'num_format': '#,##0.00', 'bold': True, 'border': 1}))
                 # Add spacing between accounts
                 row += 2
 
@@ -383,16 +372,16 @@ class GeneralLedgerExport(models.TransientModel):
                 total_credit = sum(group.get('totals', {}).get('credit', 0) for group in grouped_data.values())
                 total_balance = total_debit - total_credit
 
-                worksheet.merge_range(row, 0, row, 4, 'TOTAL',
+                worksheet.merge_range(row, 0, row, 3, 'TOTAL',
                                       workbook.add_format(
                                           {'bold': True, 'bg_color': '#4F81BD', 'font_color': 'white', 'border': 1}))
-                worksheet.write(row, 5, total_debit,
+                worksheet.write(row, 4, total_debit,
                                 workbook.add_format({'num_format': '#,##0.00', 'bold': True, 'bg_color': '#4F81BD',
                                                      'font_color': 'white', 'border': 1}))
-                worksheet.write(row, 6, total_credit,
+                worksheet.write(row, 5, total_credit,
                                 workbook.add_format({'num_format': '#,##0.00', 'bold': True, 'bg_color': '#4F81BD',
                                                      'font_color': 'white', 'border': 1}))
-                worksheet.write(row, 7, total_balance,
+                worksheet.write(row, 6, total_balance,
                                 workbook.add_format({'num_format': '#,##0.00', 'bold': True, 'bg_color': '#4F81BD',
                                                      'font_color': 'white', 'border': 1}))
 
