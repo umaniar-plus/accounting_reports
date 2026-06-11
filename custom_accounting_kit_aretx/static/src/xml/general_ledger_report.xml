@@ -226,7 +226,7 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr t-foreach="state.groupedData[accountId].lines" t-as="line" t-key="line.id"
+                                            <tr t-foreach="state.groupedData[accountId].lines.slice(0,state.visibleLinesCount[accountId] || 100)" t-as="line" t-key="line.id"
                                                 t-on-click="() => this.viewJournalEntry(line.move_id[0])"
                                                 t-att-class="line.move_name === 'Initial Balance' ? 'table-secondary fw-bold' : ''">
                                                 <t t-if="line.move_name === 'Initial Balance'">
@@ -301,6 +301,19 @@
                                                     </td>
                                                 </t>
                                             </tr>
+
+                                            <t t-if="
+                                                state.groupedData[accountId].lines.length >
+                                                (state.visibleLinesCount[accountId] || 100)">
+                                                <tr>
+                                                    <td colspan="100%" class="text-center">
+                                                        <button class="btn btn-link" t-on-click.stop="() => this.loadMore(accountId)">
+                                                            Load More
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            </t>
+
 
                                             <!-- Total Row -->
                                             <tr class="table-total">

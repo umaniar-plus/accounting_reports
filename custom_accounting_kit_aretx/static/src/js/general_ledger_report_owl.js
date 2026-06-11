@@ -26,6 +26,7 @@ export class GeneralLedgerReport extends Component {
                 balance: 0
             },
             collapsedAccounts: {},
+            visibleLinesCount: {},
             fyDates: null,
             isDebug: Boolean(odoo.debug),
             sortDirection: 'asc', // added for date sorting     
@@ -248,6 +249,7 @@ export class GeneralLedgerReport extends Component {
 
         this.state.ledgerData = await this.addCurrencySymbols(lines);
         await this.addInitialBalances();
+        this.state.visibleLinesCount = {};
         this.groupDataByAccount();
         this.calculateTotals();
     }
@@ -394,6 +396,9 @@ export class GeneralLedgerReport extends Component {
                 if (!(accountKey in this.state.collapsedAccounts)) {
                     this.state.collapsedAccounts[accountKey] = true;
                 }
+                if (!(accountKey in this.state.visibleLinesCount)) {
+                    this.state.visibleLinesCount[accountKey] = 100;
+                }
             }
 
             
@@ -406,6 +411,13 @@ export class GeneralLedgerReport extends Component {
                 this.state.groupedData[accountKey].totals.debit - this.state.groupedData[accountKey].totals.credit;
         });
     }
+
+    // Load more method 
+    loadMore(accountId) {
+        this.state.visibleLinesCount[accountId] =
+            this.state.visibleLinesCount[accountId] + 100;
+    }
+
 
     calculateTotals() {
         this.state.totals = { debit: 0, credit: 0, balance: 0 };
@@ -884,6 +896,7 @@ export class GeneralLedgerReport extends Component {
                 filter_title: this.getFilterTitle(),
                 ledger_data: this.state.ledgerData,
                 grouped_data: this.state.groupedData,
+                collapsed_accounts: this.state.collapsedAccounts,
                 totals: this.state.totals,
                 company_info: await this.orm.call("res.company", "get_current_company_info", []),
                 search_text: searchText,
@@ -946,6 +959,7 @@ export class GeneralLedgerReport extends Component {
                 filter_title: this.getFilterTitle(),
                 ledger_data: this.state.ledgerData,
                 grouped_data: this.state.groupedData,
+                collapsed_accounts: this.state.collapsedAccounts,
                 totals: this.state.totals,
                 company_info: await this.orm.call("res.company", "get_current_company_info", [])
             };

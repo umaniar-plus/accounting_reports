@@ -9,6 +9,7 @@ const configModel = 'partner.ledger.report.config';
 export class PartnerLedgerReport extends Component {
     setup() {
         this.state = useState({
+            visibleLinesCount: {},
             ledgerData: [],
             groupedData: [],
             dateFrom: "",
@@ -266,6 +267,7 @@ export class PartnerLedgerReport extends Component {
 
         this.state.ledgerData = await this.addCurrencySymbols(filteredLines);
         await this.addInitialBalances();
+        this.state.visibleLinesCount = {};
         this.groupDataByPartner();
         this.calculateTotals();
     }
@@ -468,6 +470,10 @@ export class PartnerLedgerReport extends Component {
                 }
                 // grouped[partnerName].runningBalance = 0;
             }
+
+            if (!(partnerName in this.state.visibleLinesCount)) {
+                this.state.visibleLinesCount[partnerName] = 100;
+            }
     
             grouped[partnerName].debit += line.debit;
             grouped[partnerName].credit += line.credit;
@@ -492,6 +498,11 @@ export class PartnerLedgerReport extends Component {
         });
     
         this.state.groupedData = Object.values(grouped);
+    }
+
+    loadMore(partnerName) {
+        this.state.visibleLinesCount[partnerName] = 
+        this.state.visibleLinesCount[partnerName] + 100;
     }
 
     calculateTotals() {
@@ -1056,6 +1067,7 @@ export class PartnerLedgerReport extends Component {
                 filter_title: this.getFilterTitle(),
                 ledger_data: this.state.ledgerData,
                 grouped_data: this.state.groupedData,
+                collapsed_partners: this.state.collapsedPartners,
                 totals: this.state.totals,
                 company_info: await this.orm.call("res.company", "get_current_company_info", []),
                 search_text: searchText,
@@ -1118,6 +1130,7 @@ export class PartnerLedgerReport extends Component {
                 filter_title: this.getFilterTitle(),
                 ledger_data: this.state.ledgerData,
                 grouped_data: this.state.groupedData,
+                collapsed_partners: this.state.collapsedPartners,
                 totals: this.state.totals,
                 company_info: await this.orm.call("res.company", "get_current_company_info", [])
             };

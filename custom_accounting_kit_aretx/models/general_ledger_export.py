@@ -99,11 +99,24 @@ class GeneralLedgerExport(models.TransientModel):
         """Export General Ledger to PDF using Odoo QWeb template"""
 
         if 'grouped_data' in data and isinstance(data['grouped_data'], dict):
-            data['grouped_data'] = list(data['grouped_data'].values())
+            data['grouped_data'] = [
+                {
+                    'id': account_id,
+                    **account_data
+                }
+                for account_id, account_data in data['grouped_data'].items()
+            ]
 
         if 'column_config' not in data:
             config = self.env['general.ledger.report.config'].get_active_config()
             data['column_config'] = config
+
+        collapsed_accounts = data.get('collapsed_accounts', {})
+
+        for account in data.get('grouped_data', []):
+        
+            if collapsed_accounts.get(str(account.get('id')), False):
+                account['lines'] = []
 
         data['format_currency'] = self.format_currency_helper
 
@@ -159,6 +172,13 @@ class GeneralLedgerExport(models.TransientModel):
     @api.model
     def export_general_ledger_xlsx(self, data):
         data['format_currency'] = self.format_currency_helper
+        collapsed_accounts = data.get('collapsed_accounts', {})
+
+        for account_id, account in data.get('grouped_data', {}).items():
+        
+            if collapsed_accounts.get(str(account_id), False):
+                account['lines'] = []
+
         try:
             output = io.BytesIO()
             workbook = xlsxwriter.Workbook(output, {'in_memory': True})
@@ -209,7 +229,7 @@ class GeneralLedgerExport(models.TransientModel):
             # Set column widths
             worksheet.set_column('A:A', 40)  # Journal
             worksheet.set_column('B:B', 12)  # Date
-            worksheet.set_column('C:C', 25)  # Communication
+            # worksheet.set_column('C:C', 40)  # Communication
             worksheet.set_column('D:D', 20)  # Partner
             worksheet.set_column('E:E', 10)  # Currency
             worksheet.set_column('F:F', 15)  # Debit
@@ -254,6 +274,38 @@ class GeneralLedgerExport(models.TransientModel):
 
                 row += 1
 
+                # Handle collapsed accounts
+                if collapsed_accounts.get(str(account_id), False):
+                
+                    account_name = group.get('accountName', f'Account {account_id}')
+
+                    worksheet.merge_range(
+                        row, 0, row, 4,
+                        f"Total {account_name}",
+                        workbook.add_format({'bold': True, 'border': 1})
+                    )
+
+                    worksheet.write(
+                        row, 5,
+                        group.get('totals', {}).get('debit', 0),
+                        workbook.add_format({'num_format': '#,##0.00', 'bold': True, 'border': 1})
+                    )
+
+                    worksheet.write(
+                        row, 6,
+                        group.get('totals', {}).get('credit', 0),
+                        workbook.add_format({'num_format': '#,##0.00', 'bold': True, 'border': 1})
+                    )
+
+                    worksheet.write(
+                        row, 7,
+                        group.get('totals', {}).get('balance', 0),
+                        workbook.add_format({'num_format': '#,##0.00', 'bold': True, 'border': 1})
+                    )
+
+                    row += 2
+                    continue
+
                 # Account lines
                 account_id_int = int(account_id) if str(account_id).isdigit() else account_id
 
@@ -283,7 +335,7 @@ class GeneralLedgerExport(models.TransientModel):
                         if communication:
                             communication += "\n"
                         communication += str(line['name'])
-                    worksheet.write(row, 2, communication, journal_format)
+                    worksheet.write(row, 35, communication, journal_format)
 
                     # Handle partner name
                     partner = ''

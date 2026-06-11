@@ -273,7 +273,7 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr t-foreach="partner.lines" t-as="line" t-key="line.id"
+                                            <tr t-foreach="partner.lines.slice(0,state.visibleLinesCount[partner.partner_name] || 100)" t-as="line" t-key="line.id"
                                                 t-on-click="() => this.viewJournalEntry(line.move_id[0])"
                                                 t-att-class="line.move_name === 'Initial Balance' ? 'table-secondary fw-bold' : ''">
                                                 
@@ -314,6 +314,23 @@
                                                     </td>
                                                 </t>
                                             </tr>
+
+                                            <t t-if="
+                                                partner.lines.length >
+                                                (state.visibleLinesCount[partner.partner_name] || 100)
+                                            ">
+                                                <tr>
+                                                    <td colspan="99" class="text-center">
+                                                        <button
+                                                            class="btn btn-link"
+                                                            t-on-click.stop="
+                                                                () => this.loadMore(partner.partner_name)
+                                                            ">
+                                                            Load More
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            </t>
 
                                             <!-- Total Row -->
                                             <tr class="table-total">

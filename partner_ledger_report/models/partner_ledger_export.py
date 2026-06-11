@@ -13,10 +13,48 @@ class partnerLedgerExport(models.TransientModel):
     _name = 'partner.ledger.export'
     _description = 'partner Ledger Export'
 
-    def format_currency_helper(self, amount, currency_symbol, precision=2):
-        if currency_symbol and currency_symbol != 'False':
-            return f"{currency_symbol} {amount:,.{precision}f}"
-        return f"{amount:,.{precision}f}"
+    def format_currency_helper(self, amount, currency_symbol='₹', precision=2):
+
+        try:
+            amount = float(amount or 0)
+        except Exception:
+            amount = 0.0
+    
+        formatted = f"{amount:.{precision}f}"
+    
+        if "." in formatted:
+            int_part, dec_part = formatted.split(".")
+        else:
+            int_part, dec_part = formatted, ""
+    
+        sign = ""
+        if int_part.startswith("-"):
+            sign = "-"
+            int_part = int_part[1:]
+    
+        if len(int_part) > 3:
+            last_three = int_part[-3:]
+            other = int_part[:-3]
+    
+            groups = []
+            while len(other) > 2:
+                groups.insert(0, other[-2:])
+                other = other[:-2]
+    
+            if other:
+                groups.insert(0, other)
+    
+            int_part = ",".join(groups) + "," + last_three
+    
+        result = sign + int_part
+    
+        if precision:
+            result += "." + dec_part
+    
+        if currency_symbol and currency_symbol != "False":
+            return f"{currency_symbol} {result}"
+    
+        return result
 
     def _generate_pl_filename(self, data, file_ext="pdf"):
         _logger.info(f"Called filename function for {file_ext}")
@@ -106,6 +144,15 @@ class partnerLedgerExport(models.TransientModel):
             data['column_config'] = config
 
         data['format_currency'] = self.format_currency_helper
+
+        collapsed_partners = data.get('collapsed_partners', {})
+
+        for partner in data.get('grouped_data', []):
+        
+            partner_name = partner.get('partner_name')
+
+            if collapsed_partners.get(partner_name, False):
+                partner['lines'] = []
 
         filename = self._generate_pl_filename(data, file_ext="pdf")
 
@@ -201,7 +248,7 @@ class partnerLedgerExport(models.TransientModel):
             })
 
             # Set column widths
-            worksheet.set_column('A:A', 15)  # Journal
+            worksheet.set_column('A:A', 40)  # Journal
             worksheet.set_column('B:B', 12)  # Date
             worksheet.set_column('C:C', 12)  # Due Date
             worksheet.set_column('D:D', 20)  # Transaction Amount Currency
@@ -232,11 +279,56 @@ class partnerLedgerExport(models.TransientModel):
             row = 5
             grouped_data = data.get('grouped_data', {})
             grouped_data = data.get('grouped_data', [])
+            collapsed_partners = data.get('collapsed_partners', {})
             
 
             for partner in grouped_data:
 
                 partner_name = partner.get('partner_name', 'Unknown Partner')
+
+                if collapsed_partners.get(partner_name, False):
+
+                    worksheet.merge_range(
+                        row, 0, row, 4,
+                        f"Total {partner_name}",
+                        workbook.add_format({
+                            'bold': True,
+                            'border': 1
+                        })
+                    )
+                
+                    worksheet.write(
+                        row, 5,
+                        partner.get('debit', 0),
+                        workbook.add_format({
+                            'num_format': '#,##0.00',
+                            'bold': True,
+                            'border': 1
+                        })
+                    )
+                
+                    worksheet.write(
+                        row, 6,
+                        partner.get('credit', 0),
+                        workbook.add_format({
+                            'num_format': '#,##0.00',
+                            'bold': True,
+                            'border': 1
+                        })
+                    )
+                
+                    worksheet.write(
+                        row, 7,
+                        partner.get('balance', 0),
+                        workbook.add_format({
+                            'num_format': '#,##0.00',
+                            'bold': True,
+                            'border': 1
+                        })
+                    )
+                
+                    row += 2
+                    continue
 
                 worksheet.merge_range(
                     row, 0, row, 7,
@@ -271,6 +363,13 @@ class partnerLedgerExport(models.TransientModel):
                         journal_text += f"\n{line.get('name')}"
 
                     worksheet.write(row, 0, journal_text, text_format)
+                    if journal_text and len(str(journal_text)) > 80:
+                        worksheet.set_row(row, 50)
+                    elif journal_text and len(str(journal_text)) > 40:
+                        worksheet.set_row(row, 40)
+                    else:
+                        worksheet.set_row(row, 30)
+
                     worksheet.write(row,1,datetime.strptime(str(line.get('date')),"%Y-%m-%d").strftime("%d/%m/%Y") if line.get('date') else '',text_format) 
                     worksheet.write(row,2,datetime.strptime(str(line.get('date_maturity')),"%Y-%m-%d").strftime("%d/%m/%Y") if line.get('date_maturity') else '',text_format)
                     
