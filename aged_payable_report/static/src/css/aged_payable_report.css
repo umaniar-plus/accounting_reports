@@ -1,0 +1,256 @@
+/* aged payable Custom Styles */
+
+.aged-payable-container {
+    background-color: #f8f9fa;
+    height: calc(100vh - 70px);
+    overflow-y: auto;
+    font-size: 0.9rem;
+    margin: 0 auto;
+    max-width: 90%;
+}
+
+.partner-header {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+.partner-header:hover {
+    background-color: #e9ecef !important;
+}
+
+.partner-group{
+    padding-bottom: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+.section-title{
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.partner-title {
+    font-size: 1rem;
+    font-weight: 400; /* normal weight */
+}
+
+/* Table */
+.aged-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.table-sm tbody tr:hover:not(.table-total) {
+    background-color: #f1f3f5; /* light gray */
+    cursor: pointer; /* optional */
+}
+
+.aged-table-wrapper table {
+    width: max-content;
+    min-width: 100%;
+    table-layout: fixed;
+}
+
+.table-total {
+    background-color: #fafafa;
+}
+
+.table-sm {
+    margin-bottom: 0;
+}
+
+.table-sm th,
+.table-sm td {
+    white-space: nowrap;
+    vertical-align: middle;
+    padding: 1rem;
+}
+
+.table-sm th {
+    font-weight: 600;
+}
+
+/* Amount formatting */
+.amount-negative {
+    color: #dc3545 !important;
+    font-weight: 400;
+}
+.amount-positive,
+.amount-zero {
+    color: inherit;
+    font-weight: 400;
+}
+
+
+/* Invoice */
+
+/* Column widths by data-col name — safe when columns are hidden */
+.table-sm th[data-col="invoice"],
+.table-sm td[data-col="invoice"]  { width: 280px; }
+
+.table-sm th[data-col="inv-date"],
+.table-sm td[data-col="inv-date"] { width: 120px; }
+
+.table-sm th[data-col="amount"],
+.table-sm td[data-col="amount"]   { width: 110px; }
+
+.table-sm th[data-col="total"],
+.table-sm td[data-col="total"]    { width: 120px; }
+
+.aged-shared-table {
+    width: max-content;
+    min-width: 100%;
+    table-layout: fixed;
+}
+
+.grand-total .aged-shared-table{
+    width: 100%;
+    min-width: 100%;
+}
+
+.grand-total{
+    width: 100%;
+}
+
+.grand-total table{
+    width: 100%;
+}
+
+/* Grand Total alignment */
+
+/* .grand-total table {
+    width:max-content;
+    min-width: 100%;
+    table-layout:fixed;
+} */
+
+.grand-total td {
+    white-space: nowrap;
+    vertical-align: middle;
+    padding: 1rem;
+}
+
+.grand-total {
+    overflow: visible;
+}
+
+.grand-total td:first-child {
+    text-align: left;
+    padding-left: 12px;
+}
+
+.grand-total .fw-bold td {
+    font-weight: 700;
+}
+
+
+/* Pointer cursor on select and option hover */
+.form-select {
+    cursor: pointer;
+}
+
+.form-select option:hover {
+    background-color: #e9ecef; /* optional, for hover feedback */
+    cursor: pointer;
+}
+
+.dropdown-item:hover {
+    background-color: #e9ecef; /* optional, for hover feedback */
+    cursor: pointer;
+}
+
+
+.filters-container{
+    display:flex;
+    justify-content:flex-end;
+    align-items:flex-end;
+    gap:12px;
+    flex-wrap:wrap;
+}
+
+.filters-row{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    flex-wrap:wrap;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 992px) { /* Tablets and below */
+    .section-title {
+        font-size: 18px;
+    }
+    .aged-payable-container {
+        max-width: 100%;
+        padding: 0 10px 3rem 10px; /* reduce side gaps */
+    }
+    .table-sm th,
+    .table-sm td {
+        font-size: 0.8rem;
+        padding: 0.4rem;
+    }
+    .grand-total {
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 768px) {
+
+    .filter-row {
+        flex-direction: column !important;
+        align-items: stretch !important;
+    }
+
+    .filter-row .col-md-2,
+    .filter-row .col {
+        width: 100% !important;
+    }
+
+    .filter-row .col.d-flex {
+        justify-content: flex-start !important;
+        flex-wrap: wrap !important;
+        gap: 10px;
+    }
+
+    .input-group {
+        width: 100% !important;
+        margin-bottom: 10px;
+    }
+
+    .d-flex.align-items-center.gap-2.me-2 {
+        flex-wrap: wrap !important;
+        width: 100%;
+    }
+
+    .d-flex.align-items-center.gap-2 {
+        flex-wrap: wrap !important;
+    }
+
+    .dropdown {
+        margin-top: 5px;
+    }
+
+}
+
+/* @media (max-width: 576px) { Smallest screens */
+     /* .table-sm thead {
+        display: none; hide table header 
+    }
+    .table-sm tbody tr {
+        display: block;
+        margin-bottom: 1rem;
+        border-bottom: 2px solid #dee2e6;
+    }
+    .table-sm tbody td {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.8rem;
+        padding: 0.25rem 0.5rem;
+        border-bottom: none;
+    }
+    .table-sm tbody td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        flex: 0 0 50%;
+        color: #495057;
+    }
+}  */

@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="aged_payable_pdf_export_template">
+        <t t-call="web.basic_layout">
+
+            <t t-set="company_font" t-value="data.get('company_info', {}).get('font', 'Arial, sans-serif')"/>
+            <div t-attf-style="font-family: {{company_font}}; font-size: 12px; padding: 0px;">
+
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+                    <div style="max-width: 60%;">
+                        <t t-if="data.get('company_info')">
+                            <t t-if="data['company_info'].get('logo_web')">
+                                <img style="height:45px; display: block; margin-bottom: 20px;" t-att-src="'data:image/png;base64,%s' % data['company_info']['logo_web']"/>
+                            </t>
+
+                            <h5><t t-esc="data['company_info'].get('name', '')"/></h5>
+
+                            <t t-set="company_details_html" t-value="data['company_info'].get('company_details', '')"/>
+
+                            <t t-if="company_details_html and company_details_html.startswith('{') and company_details_html.endswith('}')">
+                                <t t-set="details_dict" t-value="company_details_html"/>
+                                <t t-set="company_details_html" t-value="details_dict.get('en_US', '')"/>
+                            </t>
+
+                            <!-- <t t-set="company_details_html" t-value="company_details_html.replace(data['company_info'].get('name', ''),'',1)"/> -->
+                            <t t-if="company_details_html">
+                                <t t-set="company_details_html" t-value="company_details_html.replace(data['company_info'].get('name', ''), '', 1)"/>
+                            </t>
+
+
+
+                            <t t-raw="company_details_html"/>
+
+                            <t t-esc="data['company_info'].get('vat', '')"/>
+                        </t>
+                    </div>
+                    <div style="text-align: right;">
+                        <h3 style="margin: 0;">aged payable</h3>
+                    </div>
+                </div>
+
+                <!-- Filter info below company -->
+                <div style="margin-bottom: 15px;">
+                    <t t-if="data.get('filter_title')">
+                        <strong>Filter :</strong> <t t-esc="data['filter_title']"/>
+                    </t>
+                    <t t-if="data.get('date_from') and data.get('date_to')">
+                        <div>
+                            <strong>Period: </strong><t t-esc="data['date_from']"/> <strong>To: </strong><t t-esc="data['date_to']"/>
+                        </div>
+                    </t>
+                </div>
+
+                <!-- Ledger Table -->
+                <table style="width:100%; border-collapse: collapse; margin-bottom: 20px; page-break-before: avoid;">
+                    <tbody>
+                        
+                        <tr style="background-color: #f0f0f0; font-weight: bold;">
+                            <td style="border:1px solid #000; padding:5px; text-align:center;">Invoice</td>
+                            <td style="border:1px solid #000; padding:5px; text-align:center;">Invoice Date</td>
+                            <td style="border:1px solid #000; padding:5px; text-align:center;">At Date</td>
+                            <td style="border:1px solid #000; padding:5px; text-align:center;"><t t-esc="data['bucket_headers'][0]"/></td>
+                            <td style="border:1px solid #000; padding:5px; text-align:center;"><t t-esc="data['bucket_headers'][1]"/></td>
+                            <td style="border:1px solid #000; padding:5px; text-align:center;"><t t-esc="data['bucket_headers'][2]"/></td>
+                            <td style="border:1px solid #000; padding:5px; text-align:center;"><t t-esc="data['bucket_headers'][3]"/></td>
+                            <td style="border:1px solid #000; padding:5px; text-align:center;">Older</td>
+                            <td style="border:1px solid #000; padding:5px; text-align:center;">Total</td>
+                        </tr>
+                        
+                        <t t-foreach="data.get('grouped_data', [])" t-as="partner">
+                            <tr style="background-color:#f8f8f8; font-weight:bold;">
+                            
+                                <td colspan="9"
+                                    style="border:1px solid #000; padding:6px;">
+                                    <t t-esc="partner.get('partner_name', 'Unknown Partner')"/>
+                                </td>
+                            
+                            </tr>
+
+                            <t t-foreach="partner.get('lines', [])" t-as="line">
+                                
+                                
+                                <tr>
+                                    <td style="border:1px solid #000; padding:5px; text-align:left;">
+                                        <div>
+                                            <div>
+                                                <t t-esc="line.get('move_name', '')"/>
+                                            </div>
+
+                                            <t t-if="line.get('name') and line.get('name') != line.get('move_name')">
+                                                <div style="font-size:11px;">
+                                                    <t t-esc="line.get('name', '')"/>
+                                                </div>
+                                            </t>
+
+                                        </div>
+                                    </td>
+                                    <td style="border:1px solid #000; padding:5px; text-align:center;"><t t-esc="line.get('invoice_date', 0)"/></td>
+                                    <td style="border:1px solid #000; padding:5px; text-align:center;"><t t-esc="line.get('at_date', 0)"/></td>
+                                    <td style="border:1px solid #000; padding:5px; text-align:center;"><t t-esc="line.get('bucket_1', 0)"/></td>                                
+                                    <td style="border:1px solid #000; padding:5px; text-align:center;"><t t-esc="line.get('bucket_2', 0)"/></td>
+                                    <td style="border:1px solid #000; padding:5px; text-align:right;"><t t-esc="line.get('bucket_3', 0)"/></td>
+                                    <td style="border:1px solid #000; padding:5px; text-align:right;"><t t-esc="line.get('bucket_4', 0)"/></td>
+                                    <td style="border:1px solid #000; padding:5px; text-align:right;"><t t-esc="line.get('older', 0)"/></td>
+                                    <td style="border:1px solid #000; padding:5px; text-align:right;"><t t-esc="line.get('total', 0)"/></td>
+                                </tr>
+                            </t>
+                            <tr style="background-color:#f0f0f0; font-weight:bold;">
+
+                                <td colspan="2"
+                                    style="border:1px solid #000; padding:5px; text-align:right;">
+                                    Total <t t-esc="partner.get('partner_name','')"/>
+                                </td>
+                                <td style="border:1px solid #000; padding:5px; text-align:right; white-space:nowrap;">
+                                    <t t-esc="'₹ {:,.2f}'.format(partner.get('at_date',0))"/>
+                                </td>
+                                <td style="border:1px solid #000; padding:5px; text-align:right; white-space:nowrap;">
+                                    <t t-esc="'₹ {:,.2f}'.format(partner.get('bucket_1',0))"/>
+                                </td>
+                                <td style="border:1px solid #000; padding:5px; text-align:right; white-space:nowrap;">
+                                    <t t-esc="'₹ {:,.2f}'.format(partner.get('bucket_2',0))"/>
+                                </td>
+                                <td style="border:1px solid #000; padding:5px; text-align:right; white-space:nowrap;">
+                                    <t t-esc="'₹ {:,.2f}'.format(partner.get('bucket_3',0))"/>
+                                </td>
+                                <td style="border:1px solid #000; padding:5px; text-align:right; white-space:nowrap;">
+                                    <t t-esc="'₹ {:,.2f}'.format(partner.get('bucket_4',0))"/>
+                                </td>
+                                <td style="border:1px solid #000; padding:5px; text-align:right; white-space:nowrap;">
+                                    <t t-esc="'₹ {:,.2f}'.format(partner.get('older',0))"/>
+                                </td>
+                                <td style="border:1px solid #000; padding:5px; text-align:right; white-space:nowrap;">
+                                    <t t-esc="'₹ {:,.2f}'.format(partner.get('total',0))"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="9"
+                                    style="padding:8px; border:none;">
+                                </td>
+                            </tr>
+
+                        </t>
+
+                        <tr style="font-weight:bold; background-color: #ffffff;">
+                            <td colspan="2" style="border:1px solid #000; padding:5px; text-align:center;">TOTAL</td>
+                            <td style="border:1px solid #000; padding:5px; text-align:right; white-space:nowrap;"><t t-esc="'₹ {:,.2f}'.format(data.get('totals', {}).get('at_date',0))"/></td>
+                            <td style="border:1px solid #000; padding:5px; text-align:right; white-space:nowrap;"><t t-esc="'₹ {:,.2f}'.format(data.get('totals', {}).get('bucket_1',0))"/></td>
+                            <td style="border:1px solid #000; padding:5px; text-align:right; white-space:nowrap;"><t t-esc="'₹ {:,.2f}'.format(data.get('totals', {}).get('bucket_2',0))"/></td>
+                            <td style="border:1px solid #000; padding:5px; text-align:right; white-space:nowrap;"><t t-esc="'₹ {:,.2f}'.format(data.get('totals', {}).get('bucket_3',0))"/></td>
+                            <td style="border:1px solid #000; padding:5px; text-align:right; white-space:nowrap;"><t t-esc="'₹ {:,.2f}'.format(data.get('totals', {}).get('bucket_4',0))"/></td>
+                            <td style="border:1px solid #000; padding:5px; text-align:right; white-space:nowrap;"><t t-esc="'₹ {:,.2f}'.format(data.get('totals', {}).get('older',0))"/></td>
+                            <td style="border:1px solid #000; padding:5px; text-align:right; white-space:nowrap;"><t t-esc="'₹ {:,.2f}'.format(data.get('totals', {}).get('total',0))"/></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- Footer -->
+                <div style="text-align:center; font-size:10px; color:#555;">
+                    Generated on: <t t-esc="datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')"/>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Report Action -->
+    <record id="aged_payable_pdf_export" model="ir.actions.report">
+        <field name="name">aged payable PDF Report</field>
+        <field name="model">aged.payable.export</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">aged_payable_report.aged_payable_pdf_export_template</field>
+        <field name="report_file">aged_payable_report.aged_payable_pdf_export_template</field>
+        <field name="paperformat_id" ref="aged_payable_report.paperformat_aged_payable_compact_header"/>
+    </record>
+</odoo>

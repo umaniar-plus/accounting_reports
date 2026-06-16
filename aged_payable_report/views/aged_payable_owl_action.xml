@@ -1,0 +1,20 @@
+<odoo>
+    <!-- OWL aged payable Action -->
+    <record id="action_aged_payable_owl" model="ir.actions.client">
+        <field name="name">Aged Payable</field>
+        <field name="tag">aged_payable_report.aged_payable_owl</field>
+        <field name="target">current</field>
+    </record>
+
+    <menuitem id="menu_ledgers_parent"
+              name="Ledgers"
+              parent="account.menu_finance_reports"
+              sequence="50"/>
+
+    <menuitem id="menu_aged_payable_owl"
+              name="Aged Payable"
+              parent="menu_ledgers_parent"
+              action="action_aged_payable_owl"
+              sequence="10"/>
+
+</odoo>

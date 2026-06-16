@@ -1,0 +1,378 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="aged_payable_report.agedPayableReport" owl="1">
+        <div class="aged-payable-container">
+            <!-- Header with Filters -->
+            <div class="row mx-2 mt-3">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row mx-2 mt-0 align-items-end filter-row">
+                                <!-- Title -->
+                                <div class="col-md-2">
+                                    <span class="section-title">
+                                        <a href="" onclick="location.reload();" class="section-title">Aged Payable</a>
+                                    </span>
+                                </div>
+
+                                <!-- Filters/Search/Buttons -->
+                                <div class="col d-flex justify-content-end align-items-end">
+                                    <div class="input-group me-2">
+                                        <input type="text" class="form-control" placeholder="Search here..." t-ref="search-input" t-on-keydown="onSearchKeydown"/>
+                                        <button class="btn btn-outline-primary" t-on-click="searchJournal">Search</button>
+                                    </div>
+
+                                    <div class="d-flex align-items-center gap-2 me-2">
+                                    
+                                    <div class="d-flex align-items-center gap-2">
+
+                                        <label class="fw-bold mb-0">As Of</label>
+
+                                        <!-- Main Filter -->
+                                        <select class="form-select"
+                                                style="width:180px;"
+                                                t-model="state.dateFilter"
+                                                t-on-change="onDateFilterChange">
+
+                                            <option value="today">Today</option>
+                                            <option value="end_of_month">End Of Month</option>
+                                            <option value="end_of_quarter">End Of Quarter</option>
+                                            <option value="end_of_year">End Of Year</option>
+                                            <option value="specific_date">Specific Date</option>
+
+                                        </select>
+
+                                        <!-- Month Selector -->
+
+                                        <t t-if="state.dateFilter === 'end_of_month'">
+
+                                            <select class="form-select"
+                                                    style="width:180px;"
+                                                    t-model="state.selectedMonth"
+                                                    t-on-change="onDateFilterChange">
+
+                                                <option value="1">January</option>
+                                                <option value="2">February</option>
+                                                <option value="3">March</option>
+                                                <option value="4">April</option>
+                                                <option value="5">May</option>
+                                                <option value="6">June</option>
+                                                <option value="7">July</option>
+                                                <option value="8">August</option>
+                                                <option value="9">September</option>
+                                                <option value="10">October</option>
+                                                <option value="11">November</option>
+                                                <option value="12">December</option>
+
+                                            </select>
+
+                                            <select class="form-select"
+                                                    style="width:120px;"
+                                                    t-model="state.selectedYear"
+                                                    t-on-change="onDateFilterChange">
+
+                                                <t t-foreach="state.years"
+                                                   t-as="year"
+                                                   t-key="year">
+
+                                                    <option t-att-value="year">
+                                                        <t t-esc="year"/>
+                                                    </option>
+
+                                                </t>
+
+                                            </select>
+
+                                        </t>
+
+                                        <!-- Quarter Selector -->
+
+                                        <t t-if="state.dateFilter === 'end_of_quarter'">
+
+                                            <select class="form-select"
+                                                    style="width:120px;"
+                                                    t-model="state.selectedQuarter"
+                                                    t-on-change="onDateFilterChange">
+
+                                                <option value="Q1">Q1</option>
+                                                <option value="Q2">Q2</option>
+                                                <option value="Q3">Q3</option>
+                                                <option value="Q4">Q4</option>
+
+                                            </select>
+
+                                            <select class="form-select"
+                                                    style="width:120px;"
+                                                    t-model="state.selectedYear"
+                                                    t-on-change="onDateFilterChange">
+
+                                                <t t-foreach="state.years"
+                                                   t-as="year"
+                                                   t-key="year">
+
+                                                    <option t-att-value="year">
+                                                        <t t-esc="year"/>
+                                                    </option>
+
+                                                </t>
+
+                                            </select>
+
+                                        </t>
+
+                                        <!-- Year Selector -->
+
+                                        <t t-if="state.dateFilter === 'end_of_year'">
+
+                                            <select class="form-select"
+                                                    style="width:120px;"
+                                                    t-model="state.selectedYear"
+                                                    t-on-change="onDateFilterChange">
+
+                                                <t t-foreach="state.years"
+                                                   t-as="year"
+                                                   t-key="year">
+
+                                                    <option t-att-value="year">
+                                                        <t t-esc="year"/>
+                                                    </option>
+
+                                                </t>
+
+                                            </select>
+
+                                        </t>
+
+                                        <!-- Manual Date -->
+
+                                        <t t-if="state.dateFilter === 'specific_date'">
+
+                                            <input type="date"
+                                                   class="form-control"
+                                                   style="width:180px;"
+                                                   t-model="state.asOfDate"
+                                                   t-on-change="applyFilters"/>
+
+                                        </t>
+
+                                        <label class="fw-bold mb-0">Days</label>
+
+                                        <input type="number"
+                                               class="form-control"
+                                               t-model="state.periodLength"
+                                               t-on-change="applyFilters"
+                                               min="1"
+                                               style="width:100px;"/>
+
+                                    </div>
+
+
+
+                                    </div>
+                                    <div class="d-flex">
+
+                                        <!-- Export Dropdown -->
+                                        <div class="dropdown">
+                                            <button class="btn btn-success dropdown-toggle" t-att-disabled="!state.ledgerData.length" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                Export
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li><a class="dropdown-item" t-on-click="exportToPDF">PDF</a></li>
+                                                <li><a class="dropdown-item" t-on-click="exportToXLSX">XLSX</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+
+                                    <t t-if="state.isDebug">
+                                        <button class="btn btn-outline-danger ms-2" title="Debug Mode Active" t-on-click="openDebugConfig" >
+                                            <i class="fa fa-bug"/>
+                                        </button>
+                                    </t>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Filter Display -->
+            <div class="row m-2">
+                <div class="col">
+                    <div class="alert alert-info py-2 mb-0">
+                        <span class="partner-title"><t t-esc="getActiveDateRangeLabel()"/> </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- aged payable Body -->
+            <div class="row m-2">
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body p-0">
+                        <div class="aged-table-wrapper">
+                            <div t-foreach="state.groupedData" t-as="partner" t-key="partner.partner_name" class="partner-group bg-light rounded p-2">
+                                <!-- Account Header -->
+                                <div class="partner-header bg-light p-2 border-bottom" t-on-click="togglePartner.bind(this, partner.partner_name)">
+                                    <i t-att-class="state.collapsedPartners[partner.partner_name] ? 'fa fa-chevron-right me-2' : 'fa fa-chevron-down me-2'"/>
+                                    <span class="partner-title" t-esc="partner.partner_name"/>
+                                </div>
+
+                                <!-- Account Details Table -->
+                                <t t-if="!state.collapsedPartners[partner.partner_name]">
+                                    <table class="table table-sm mb-0 aged-shared-table">
+                                        <thead class="table-light" style="background-color: #D3D3D3;">
+                                            <tr>
+                                                <th t-if="state.config.show_invoice" style="background-color: #D3D3D3; font-weight: bold;" data-col="invoice">Invoice</th>
+                                                <th t-if="state.config.show_invoice_date" style="background-color: #D3D3D3; font-weight: bold; cursor:pointer;" class="text-end" data-col="inv-date" t-on-click="sortByInvoiceDate"> Invoice Date <i class="fa ms-1" t-att-class=" state.sortDirection === 'asc'?'fa-sort-up':'fa-sort-down'"/></th>
+                                                <th t-if="state.config.show_at_date" style="background-color: #D3D3D3; font-weight: bold;" class="text-end" data-col="amount">At Date</th>
+                                                <th t-if="state.config.show_bucket_1" style="background-color: #D3D3D3; font-weight: bold;" class="text-end" data-col="amount"><t t-esc="state.bucketHeaders[0]"/></th>
+                                                <th t-if="state.config.show_bucket_2" style="background-color: #D3D3D3; font-weight: bold;" class="text-end" data-col="amount"><t t-esc="state.bucketHeaders[1]"/></th>
+                                                <th t-if="state.config.show_bucket_3" style="background-color: #D3D3D3; font-weight: bold;" class="text-end" data-col="amount"><t t-esc="state.bucketHeaders[2]"/></th>
+                                                <th t-if="state.config.show_bucket_4" style="background-color: #D3D3D3; font-weight: bold;" class="text-end" data-col="amount"><t t-esc="state.bucketHeaders[3]"/></th>
+                                                <th t-if="state.config.show_older" style="background-color: #D3D3D3; font-weight: bold;" class="text-end" data-col="amount">Older</th>
+                                                <th t-if="state.config.show_total" style="background-color: #D3D3D3; font-weight: bold;" class="text-end" data-col="total">Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr t-foreach="
+                                                partner.lines.slice(0,state.visibleLinesCount[partner.partner_name])" 
+                                                t-as="line" t-key="line.id"
+                                                t-on-click="() => this.viewJournalEntry(line.move_id[0])"
+                                                t-att-class="line.move_name === 'Initial Balance' ? 'table-secondary fw-bold' : ''">
+                                                
+                                                <t>
+                                                    <td t-if="state.config.show_invoice" data-label="Journal">
+                                                        <div class="d-flex flex-column">
+                                                            <span class="text-muted" t-esc="line.move_name"/><t t-if="line.name and line.name != line.move_name">
+                                                            <span t-esc="line.name"/></t>
+                                                        </div>
+                                                    </td>
+                                                    
+                                                    <td t-if="state.config.show_invoice_date" data-label="Invoice Date" class="text-end">
+                                                        <t t-esc="line.invoice_date"/>
+                                                    </td>
+
+                                                    <td t-if="state.config.show_at_date" data-label="At Date" class="text-end">
+                                                        <t t-esc="formatCurrency(line.at_date || 0,'₹')"/>
+                                                    </td>
+
+                                                    <td t-if="state.config.show_bucket_1"  data-label="Bucket 1" class="text-end">
+                                                        <t t-esc="formatCurrency(line.bucket_1 || 0,'₹')"/>
+                                                    </td>
+
+                                                    <td t-if="state.config.show_bucket_2"  data-label="Bucket 2" class="text-end">
+                                                        <t t-esc="formatCurrency(line.bucket_2 || 0,'₹')"/>
+                                                     </td>
+
+                                                    <td t-if="state.config.show_bucket_3"  data-label="Bucket 3" class="text-end">
+                                                        <t t-esc="formatCurrency(line.bucket_3 || 0,'₹')"/>
+                                                    </td>
+
+                                                    <td t-if="state.config.show_bucket_4" data-label="Bucket 4" class="text-end">
+                                                        <t t-esc="formatCurrency(line.bucket_4 || 0,'₹')"/>
+                                                    </td>
+
+                                                    <td t-if="state.config.show_older"  data-label="Older" class="text-end">
+                                                        <t t-esc="formatCurrency(line.older || 0,'₹')"/>
+                                                    </td>
+
+                                                    <td t-if="state.config.show_total" data-label="Total" class="text-end">
+                                                        <t t-esc="formatCurrency(line.total || 0,'₹')"/>
+                                                    </td>
+                                                </t>
+                                            </tr>
+
+                                            <t t-if="
+                                                partner.lines.length >
+                                                state.visibleLinesCount[partner.partner_name]">
+                                            <tr>
+                                            <td colspan="9" class="text-center">
+
+                                            <button
+                                                class="btn btn-outline-secondary btn-sm"
+                                                t-on-click="
+                                                () => loadMore(partner.partner_name)">
+
+                                            Load More
+
+                                            </button>
+                                            </td>
+                                            </tr>
+                                            </t>
+                                            
+                                            <!-- Total Row -->
+
+
+                                            <tr class="table-total fw-bold">
+
+                                                <td>
+                                                    Total
+                                                    <t t-esc="partner.partner_name"/>
+                                                </td>
+                                            
+                                                <td style="font-weight: bold;" t-if="state.config.show_invoice_date"></td>
+
+                                                <td style="font-weight: bold;" t-if="state.config.show_at_date" class="text-end"><t t-esc="formatCurrency(partner.at_date || 0,'₹')"/></td>
+                                            
+                                                <td style="font-weight: bold;" t-if="state.config.show_bucket_1" class="text-end" ><t t-esc="formatCurrency(partner.bucket_1 || 0,'₹')"/></td>
+                                            
+                                                <td style="font-weight: bold;" t-if="state.config.show_bucket_2" class="text-end"><t t-esc="formatCurrency(partner.bucket_2 || 0,'₹')"/></td>
+                                            
+                                                <td style="font-weight: bold;" t-if="state.config.show_bucket_3" class="text-end"><t t-esc="formatCurrency(partner.bucket_3 || 0,'₹')"/></td>
+                                            
+                                                <td style="font-weight: bold;" t-if="state.config.show_bucket_4" class="text-end"><t t-esc="formatCurrency(partner.bucket_4 || 0,'₹')"/></td>
+                                            
+                                                <td style="font-weight: bold;" t-if="state.config.show_older" class="text-end"><t t-esc="formatCurrency(partner.older || 0,'₹')"/></td>
+                                            
+                                                <td style="font-weight: bold;" t-if="state.config.show_total" class="text-end"><t t-esc="formatCurrency(partner.total || 0,'₹')"/></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </t>
+                            </div>
+
+                            <!-- Grand Total Row -->
+                            <div class="grand-total bg-light border-top">
+                                <table class="table table-sm mb-0 aged-shared-table">
+                                    <tbody>
+                                        <tr class="table-total fw-bold">
+                                            <td t-if="state.config.show_invoice" data-col="invoice">
+                                                Grand Total
+                                            </td>
+                                            <td t-if="state.config.show_invoice_date" data-col="inv-date"></td>
+                                            <td t-if="state.config.show_at_date" class="text-end" data-col="amount">
+                                                <t t-esc="formatCurrency(state.totals.at_date || 0,'₹')"/>
+                                            </td>
+                                            <td t-if="state.config.show_bucket_1" class="text-end" data-col="amount">
+                                                <t t-esc="formatCurrency(state.totals.bucket_1 || 0,'₹')"/>
+                                            </td>
+                                            <td t-if="state.config.show_bucket_2" class="text-end" data-col="amount">
+                                                <t t-esc="formatCurrency(state.totals.bucket_2 || 0,'₹')"/>
+                                            </td>
+                                            <td t-if="state.config.show_bucket_3" class="text-end" data-col="amount">
+                                                <t t-esc="formatCurrency(state.totals.bucket_3 || 0,'₹')"/>
+                                            </td>
+                                            <td t-if="state.config.show_bucket_4" class="text-end" data-col="amount">
+                                                <t t-esc="formatCurrency(state.totals.bucket_4 || 0,'₹')"/>
+                                            </td>
+                                            <td t-if="state.config.show_older" class="text-end" data-col="amount">
+                                                <t t-esc="formatCurrency(state.totals.older || 0,'₹')"/>
+                                            </td>
+                                            <td t-if="state.config.show_total" class="text-end" data-col="total">
+                                                <t t-esc="formatCurrency(state.totals.total || 0,'₹')"/>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+
+</templates>
