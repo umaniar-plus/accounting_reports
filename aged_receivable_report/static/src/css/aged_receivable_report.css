@@ -1,6 +1,6 @@
-/* aged payable Custom Styles */
+/* aged receivable Custom Styles */
 
-.aged-payable-container {
+.aged-receivable-container {
     background-color: #f8f9fa;
     height: calc(100vh - 70px);
     overflow-y: auto;
@@ -193,7 +193,7 @@
     .section-title {
         font-size: 18px;
     }
-    .aged-payable-container {
+    .aged-receivable-container {
         max-width: 100%;
         padding: 0 10px 3rem 10px; /* reduce side gaps */
     }

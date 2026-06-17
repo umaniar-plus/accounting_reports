@@ -1,13 +1,12 @@
 from odoo import api, models
-import logging
-_logger = logging.getLogger(__name__)
 
-class AgedPayableReport(models.AbstractModel):
-    _name = "aged.payable.report"
-    _description = "Aged Payable Report Logic"
+
+class AgedReceivableReport(models.AbstractModel):
+    _name = "aged.receivable.report"
+    _description = "Aged Receivable Report Logic"
 
     @api.model
-    def get_aged_payable_data(
+    def get_aged_receivable_data(
         self,
         as_of_date,
         period_length=30,
@@ -18,8 +17,8 @@ class AgedPayableReport(models.AbstractModel):
         domain = [
             ('move_id.state', '=', 'posted'),
             ('partner_id', '!=', False),
-            ('account_id.account_type', '=', 'liability_payable'),
-            ('balance', '!=', 0),
+            ('account_id.account_type', '=', 'asset_receivable'),
+            ('amount_residual', '!=', 0),
             ('date', '<=', as_of_date),
         ]
 
@@ -56,23 +55,7 @@ class AgedPayableReport(models.AbstractModel):
 
         for line in lines:
 
-            outstanding = abs(line.balance)
-
-            for partial in line.matched_debit_ids:
-                if partial.max_date and str(partial.max_date) <= as_of_date:
-                    outstanding -= partial.amount
-
-            for partial in line.matched_credit_ids:
-                if partial.max_date and str(partial.max_date) <= as_of_date:
-                    outstanding -= partial.amount
-                    
-            _logger.warning(
-                "MOVE=%s BALANCE=%s OUTSTANDING=%s PARTNER=%s",
-                line.move_name,
-                line.balance,
-                outstanding,
-                line.partner_id.name,
-            )
+            outstanding = abs(line.amount_residual)
 
             if abs(line.amount_residual) <= 0:
                 continue
@@ -87,7 +70,7 @@ class AgedPayableReport(models.AbstractModel):
                 'account_id': [line.account_id.id, line.account_id.display_name],
                 'balance': outstanding,
                 'amount_residual': line.amount_residual,
-                'reconciled': False,
+                'reconciled': line.reconciled,
                 'name': line.name or '',
             })
         if search_text:

@@ -4,9 +4,9 @@ import { registry } from "@web/core/registry";
 import { Component, useState, onWillStart, onMounted, useRef } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
 
-const configModel = 'aged.payable.report.config';
+const configModel = 'aged.receivable.report.config';
 
-export class AgedPayableReport extends Component {
+export class AgedReceivableReport extends Component {
     setup() {
         this.state = useState({
             ledgerData: [],
@@ -107,7 +107,7 @@ export class AgedPayableReport extends Component {
             }
             // When page loads again, restores to which accounts were open/closed
             const savedCollapsed =
-                localStorage.getItem("aged_payable_collapsed_accounts");
+                localStorage.getItem("aged_receivable_collapsed_accounts");
 
             if (savedCollapsed) {
                 this.state.collapsedPartners =
@@ -115,7 +115,7 @@ export class AgedPayableReport extends Component {
             }
 
             const savedScroll =
-                localStorage.getItem("aged_payable_scroll");
+                localStorage.getItem("aged_receivable_scroll");
 
             if (savedScroll) {
                 setTimeout(() => {
@@ -192,7 +192,7 @@ export class AgedPayableReport extends Component {
                 this.state.config = configRecord || {};
             }
         } catch (error) {
-            console.error("Failed to load aged payable Configuration:", error);
+            console.error("Failed to load aged receivable Configuration:", error);
             // Default config is used
         }
     }
@@ -233,15 +233,15 @@ export class AgedPayableReport extends Component {
                 view_mode: "form",
                 target: "new",
                 views: [[false, "form"]],
-                name: "aged payable Configuration",
+                name: "aged receivable Configuration",
             });
             this.loadConfig();
             this.loadLedgerData();
         } catch (error) {
-            console.error("Failed to retrieve or initialize aged payable Configuration:", error);
+            console.error("Failed to retrieve or initialize aged receivable Configuration:", error);
             // Optionally show a user-facing notification about the error
             this.env.services.notification.add(
-                "Could not load the aged payable Configuration.",
+                "Could not load the aged receivable Configuration.",
                 { type: 'danger' }
             );
         }
@@ -287,7 +287,7 @@ export class AgedPayableReport extends Component {
         let domain = [
             ['move_id.state', '=', 'posted'],
             ['partner_id', '!=', false],
-            ['account_id.account_type', '=', 'liability_payable'],
+            ['account_id.account_type', '=', 'asset_receivable'],
             ['balance', '!=', 0]
             // ['account_id.active', '=', true]
         ];
@@ -302,8 +302,8 @@ export class AgedPayableReport extends Component {
         }
 
         const lines = await this.orm.call(
-            "aged.payable.report",
-            "get_aged_payable_data",
+            "aged.receivable.report",
+            "get_aged_receivable_data",
             [
                 this.state.asOfDate,
                 this.state.periodLength,
@@ -312,7 +312,7 @@ export class AgedPayableReport extends Component {
         );
         console.log(lines);
 
-        // Keep only payable/receivable lines
+        // Keep only receivable lines
         this.state.ledgerData = lines;
         this.groupDataByPartner();
         this.calculateTotals();
@@ -323,7 +323,7 @@ export class AgedPayableReport extends Component {
     togglePartner(partnerName) {
         this.state.collapsedPartners[partnerName] = !this.state.collapsedPartners[partnerName];
         localStorage.setItem(
-            "aged_payable_collapsed_accounts",
+            "aged_receivable_collapsed_accounts",
             JSON.stringify(this.state.collapsedPartners)
         );
     }
@@ -397,13 +397,7 @@ export class AgedPayableReport extends Component {
         };
 
         sortedLines.forEach(line => {
-            // if (
-            //     line.reconciled === true ||
-            //     Math.abs(line.amount_residual || 0) === 0
-            // ) {
-            //     return;
-            // }
-
+            
             if (
 
                 this.state.selectedPartners.length
@@ -415,23 +409,15 @@ export class AgedPayableReport extends Component {
                     this.state.selectedPartners.map(
             
                         p => p.id
-            
                     );
-            
                 if (
-            
                     !allowed.includes(
-            
                         line.partner_id?.[0]
-            
                     )
-            
-                ) {
-            
+                ) {            
                     return;
-            
-                }
-            
+
+                }           
             }
 
             if (
@@ -473,25 +459,11 @@ export class AgedPayableReport extends Component {
             let bucket_4 = 0;
             let older = 0;
             
-
             let amount =
                 line.amount_residual !== undefined
                     ? line.amount_residual
                     : (line.balance || 0);
 
-            // if ((line.balance || 0) < 0) {
-            //     amount = -Math.abs(amount);
-            
-            // } else {
-            
-            //     amount = Math.abs(amount);
-            
-            // }
-
-            
-
-
-            
             if (ageDays <= 0) {
                 // Current / not yet due
             }
@@ -599,9 +571,9 @@ export class AgedPayableReport extends Component {
         try {
             const lines = await this.orm.call(
 
-                "aged.payable.report",
+                "aged.receivable.report",
             
-                "get_aged_payable_data",
+                "get_aged_receivable_data",
             
                 [
             
@@ -945,12 +917,12 @@ export class AgedPayableReport extends Component {
             };
             // SAVES which accounts are open and position of scroll  
             localStorage.setItem(
-                "aged_payable_collapsed_accounts",
+                "aged_receivable_collapsed_accounts",
                 JSON.stringify(this.state.collapsedPartners)
             );
             
             localStorage.setItem(
-                "aged_payable_scroll",
+                "aged_receivable_scroll",
                 document.querySelector('.o_content')?.scrollTop || 0
             );
             this.env.services.action.doAction(action);
@@ -1008,8 +980,8 @@ export class AgedPayableReport extends Component {
 
             // Call the PDF export method
             const result = await this.orm.call(
-                "aged.payable.export",
-                "export_aged_payable_pdf",
+                "aged.receivable.export",
+                "export_aged_receivable_pdf",
                 [exportData]
             );
 
@@ -1050,8 +1022,8 @@ export class AgedPayableReport extends Component {
 
             // Call the XLSX export method
             const result = await this.orm.call(
-                "aged.payable.export",
-                "export_aged_payable_xlsx",
+                "aged.receivable.export",
+                "export_aged_receivable_xlsx",
                 [exportData]
             );
 
@@ -1069,5 +1041,5 @@ export class AgedPayableReport extends Component {
     }
 }
 
-AgedPayableReport.template = "aged_payable_report.agedPayableReport";
-registry.category("actions").add("aged_payable_report.aged_payable_owl", AgedPayableReport);
+AgedReceivableReport.template = "aged_receivable_report.agedReceivableReport";
+registry.category("actions").add("aged_receivable_report.aged_receivable_owl", AgedReceivableReport);

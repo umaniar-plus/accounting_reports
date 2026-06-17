@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
 
-    <t t-name="aged_payable_report.agedPayableReport" owl="1">
-        <div class="aged-payable-container">
+    <t t-name="aged_receivable_report.agedReceivableReport" owl="1">
+        <div class="aged-receivable-container">
             <!-- Header with Filters -->
             <div class="row mx-2 mt-3">
                 <div class="col-lg-12">
@@ -12,7 +12,7 @@
                                 <!-- Title -->
                                 <div class="col-md-2">
                                     <span class="section-title">
-                                        <a href="" onclick="location.reload();" class="section-title">Aged Payable</a>
+                                        <a href="" onclick="location.reload();" class="section-title">Aged Receivable</a>
                                     </span>
                                 </div>
 
@@ -295,7 +295,7 @@
                 </div>
             </div>
 
-            <!-- aged payable Body -->
+            <!-- aged receivable Body -->
             <div class="row m-2">
                 <div class="col">
                     <div class="card">

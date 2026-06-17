@@ -15,6 +15,6 @@
               name="Partner Ledger"
               parent="menu_ledgers_parent"
               action="action_partner_ledger_owl"
-              sequence="10"/>
+              sequence="20"/>
 
 </odoo>

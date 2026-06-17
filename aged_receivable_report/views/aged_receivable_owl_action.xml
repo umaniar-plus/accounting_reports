@@ -1,0 +1,20 @@
+<odoo>
+    <!-- OWL aged receivable Action -->
+    <record id="action_aged_receivable_owl" model="ir.actions.client">
+        <field name="name">Aged Receivable</field>
+        <field name="tag">aged_receivable_report.aged_receivable_owl</field>
+        <field name="target">current</field>
+    </record>
+
+    <menuitem id="menu_ledgers_parent"
+              name="Ledgers"
+              parent="account.menu_finance_reports"
+              sequence="50"/>
+
+    <menuitem id="menu_aged_receivable_owl"
+              name="Aged Receivable"
+              parent="menu_ledgers_parent"
+              action="action_aged_receivable_owl"
+              sequence="10"/>
+
+</odoo>
