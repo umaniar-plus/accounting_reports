@@ -2,7 +2,7 @@
 <templates xml:space="preserve">
 
     <t t-name="custom_accounting_kit_aretx.GeneralLedgerReport" owl="1">
-        <div class="general-ledger-container">
+        <div t-att-class="'general-ledger-container ' + (Object.values(state.collapsedAccounts).includes(false)? 'container-expanded': '')">
             <!-- Header with Filters -->
             <div class="row mx-2 mt-3">
                 <div class="col-lg-12">
@@ -17,13 +17,13 @@
                                 </div>
 
                                 <!-- Filters/Search/Buttons -->
-                                <div class="col d-flex justify-content-end align-items-end">
+                                <div class="col d-flex justify-content-end align-items-end flex-wrap filters-container">
                                     <div class="input-group me-2">
                                         <input type="text" class="form-control" placeholder="Search here..." t-ref="search-input" t-on-keydown="onSearchKeydown"/>
                                         <button class="btn btn-outline-primary" t-on-click="searchJournal">Search</button>
                                     </div>
 
-                                    <div class="d-flex align-items-center gap-2 me-2">
+                                    <div class="d-flex align-items-center gap-2 me-2 flex-wrap filters-row">
                                         <!-- Main Dropdown for Date Type -->
                                         <div class="dropdown flex-shrink-0">
                                             <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -171,61 +171,180 @@
             <div class="row m-2">
                 <div class="col">
                     <div class="card">
-                        <div class="card-body p-0">
-                            <div t-foreach="Object.keys(state.groupedData)" t-as="accountId" t-key="accountId" class="account-group bg-light rounded p-2">
+                    <div class="card-body p-0">
+                        <div class="ledger-table-wrapper">
+
+                            <table class="table table-sm mb-0 ledger-shared-table">
+                                <thead class="enterprise-header">
+                                    <tr>
+                                        <th t-if="state.config.show_journal" data-col="journal">
+                                            Journal
+                                        </th>
+                                        <th t-if="state.config.show_date" data-col="date">
+                                            Date
+                                        </th>
+                                        <th t-if="state.config.show_partner" data-col="partner">
+                                            Partner
+                                        </th>
+                                        <th
+                                            t-if="state.config.show_partner"
+                                            class="text-end" data-col="amount">
+                                            Transaction Amount Currency
+                                        </th>
+                                        <th t-if="state.config.show_currency" data-col="currency">
+                                            Currency
+                                        </th>
+                                        <th
+                                            t-if="state.config.show_debit"
+                                            class="text-end" data-col="debit">
+                                            Debit
+                                        </th>
+                                        <th
+                                            t-if="state.config.show_credit"
+                                            class="text-end" data-col="credit">
+                                            Credit
+                                        </th>
+                                        <th
+                                            t-if="state.config.show_balance"
+                                            class="text-end" data-col="balance">
+                                            Balance
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+
+                            <div t-foreach="Object.keys(state.groupedData)" t-as="accountId" t-key="accountId" class="account-group">
                                 <!-- Account Header -->
                                 
-                                <div class="account-header bg-light p-2 border-bottom" t-on-click="toggleAccount.bind(this, accountId)">
-                                    <div class="row align-items-center">
-                                        <!-- Account Name -->
-                                        <div class="col d-flex align-items-center">
-                                            <i t-att-class="state.collapsedAccounts[accountId] ? 'fa fa-chevron-right me-2' : 'fa fa-chevron-down me-2'"/>
-                                            <span class="account-title" t-esc="state.groupedData[accountId].accountName"/>
-                                        </div>
+                                <table class="table table-sm mb-0 ledger-shared-table account-header-table">
 
-                                       
+                                    <tbody>
 
-                                        <!-- Totals Inline -->
-                                        <t t-if="state.collapsedAccounts[accountId]">   
-                                        <div class="ms-auto d-flex gap-4 justify-content-end">
-                                            <div class="text-end amount-column">
-                                                <span t-att-class="getAmountClass(state.groupedData[accountId].totals.debit)" style="white-space: nowrap;">
-                                                    <t t-esc="formatCurrency(state.groupedData[accountId].totals.debit, state.groupedData[accountId].lines[0]?.currency_symbol || '$')"/>
-                                                </span>
-                                            </div>
-                                            <div class="text-end amount-column">
-                                                <span t-att-class="getAmountClass(state.groupedData[accountId].totals.credit)" style="white-space: nowrap;">
-                                                    <t t-esc="formatCurrency(state.groupedData[accountId].totals.credit, state.groupedData[accountId].lines[0]?.currency_symbol || '$')"/>
-                                                </span>
-                                            </div>
-                                            <div class="text-end amount-column">
-                                                <span t-att-class="getAmountClass(state.groupedData[accountId].totals.balance)" style="white-space: nowrap;">
-                                                    <t t-esc="formatCurrency(state.groupedData[accountId].totals.balance, state.groupedData[accountId].lines[0]?.currency_symbol || '$')"/>
-                                                </span>
-                                            </div>
-                                        </div>
-                                        </t>
-                                    </div>  
-                                </div>
+                                        <tr
+                                            t-att-class="
+                                                'account-header border-bottom ' +
+                                                (!state.collapsedAccounts[accountId] ? 'account-expanded' : '')
+                                            "
+                                            t-on-click="toggleAccount.bind(this, accountId)">
+
+                                            <!-- Journal / Account Name -->
+
+                                            <td data-col="journal">
+
+                                                <div class="d-flex align-items-center">
+
+                                                    <i
+                                                        t-att-class="
+                                                            state.collapsedAccounts[accountId]
+                                                            ? 'fa fa-chevron-right me-2'
+                                                            : 'fa fa-chevron-down me-2'
+                                                        "/>
+
+                                                    <span
+                                                        class="account-title"
+                                                        t-esc="state.groupedData[accountId].accountName"/>
+
+                                                </div>
+
+                                            </td>
+
+                                            <!-- Date -->
+
+                                            <td
+                                                t-if="state.config.show_date" data-col="date">
+
+                                            </td>
+
+                                            <!-- Partner -->
+
+                                            <td
+                                                t-if="state.config.show_partner" data-col="partner">
+
+                                            </td>
+
+                                            <!-- Transaction Amount Currency -->
+
+                                            <td
+                                                t-if="state.config.show_partner"
+                                                class="text-end" data-col="amount">
+
+                                            </td>
+
+                                            <!-- Currency -->
+
+                                            <td
+                                                t-if="state.config.show_currency" data-col="currency">
+
+                                            </td>
+
+                                            <!-- Debit -->
+
+                                            <td
+                                                t-if="state.config.show_debit"
+                                                class="text-end" data-col="debit">
+
+                                                <t t-if="state.collapsedAccounts[accountId]">
+
+                                                    <t t-esc="
+                                                        formatCurrency(
+                                                            state.groupedData[accountId].totals.debit,
+                                                            state.groupedData[accountId].lines[0]?.currency_symbol || '₹'
+                                                        )"/>
+
+                                                </t>
+
+                                            </td>
+
+                                            <!-- Credit -->
+
+                                            <td
+                                                t-if="state.config.show_credit"
+                                                class="text-end" data-col="credit">
+
+                                                <t t-if="state.collapsedAccounts[accountId]">
+
+                                                    <t t-esc="
+                                                        formatCurrency(
+                                                            state.groupedData[accountId].totals.credit,
+                                                            state.groupedData[accountId].lines[0]?.currency_symbol || '₹'
+                                                        )"/>
+
+                                                </t>
+
+                                            </td>
+
+                                            <!-- Balance -->
+
+                                            <td
+                                                t-if="state.config.show_balance"
+                                                class="text-end" data-col="balance">
+
+                                                <t t-if="state.collapsedAccounts[accountId]">
+
+                                                    <t t-esc="
+                                                        formatCurrency(
+                                                            state.groupedData[accountId].totals.balance,
+                                                            state.groupedData[accountId].lines[0]?.currency_symbol || '₹'
+                                                        )"/>
+
+                                                </t>
+
+                                            </td>
+
+                                        </tr>
+
+                                    </tbody>
+
+                                </table>
 
                                 <!-- Account Details Table -->
                                 <t t-if="!state.collapsedAccounts[accountId]">
-                                    <div class="ledger-table-wrapper">
-                                    <table class="table table-sm mb-0">
-                                        <thead class="table-light" style="background-color: #D3D3D3;">
-                                            <tr>
-                                                <th t-if="state.config.show_journal" style="background-color: #D3D3D3; font-weight: bold;">Journal</th>
-                                                <th t-if="state.config.show_date" style="background-color: #D3D3D3; font-weight: bold; cursor:pointer;" t-on-click.stop="sortByDate">Date<span t-esc="state.sortDirection === 'asc' ? '↑' : '↓'"/></th>
-                                                <!-- <th t-if="state.config.show_communication" style="background-color: #D3D3D3; font-weight: bold; width:22%">Communication</th> -->
-                                                <th t-if="state.config.show_partner" style="background-color: #D3D3D3; font-weight: bold;">Partner</th>
-                                                <th t-if="state.config.show_partner" style="background-color: #D3D3D3; font-weight: bold; ">Transaction Amount Currency</th>
-                                                <th t-if="state.config.show_currency" style="background-color: #D3D3D3; font-weight: bold;">Currency</th>
-                                                <th t-if="state.config.show_debit" style="background-color: #D3D3D3; font-weight: bold;"  class="text-end">Debit</th>
-                                                <th t-if="state.config.show_credit" style="background-color: #D3D3D3; font-weight: bold;" class="text-end">Credit</th>
-                                                <th t-if="state.config.show_balance" style="background-color: #D3D3D3; font-weight: bold;" class="text-end">Balance</th>
-                                            </tr>
-                                        </thead>
+                                    <table class="table table-sm mb-0 ledger-shared-table account-detail-table">
                                         <tbody>
+                                            
+
                                             <tr t-foreach="state.groupedData[accountId].lines.slice(0,state.visibleLinesCount[accountId] || 100)" t-as="line" t-key="line.id"
                                                 t-on-click="() => this.viewJournalEntry(line.move_id[0])"
                                                 t-att-class="line.move_name === 'Initial Balance' ? 'table-secondary fw-bold' : ''">
@@ -235,7 +354,9 @@
                                                         <t t-set="count" t-value="0"/>
                                                         <t t-if="state.config.show_journal" t-set="count" t-value="count + 1"/>
                                                         <t t-if="state.config.show_date" t-set="count" t-value="count + 1"/>
+                                                        
                                                         <!-- <t t-if="state.config.show_communication" t-set="count" t-value="count + 1"/> -->
+                                                        
                                                         <t t-if="state.config.show_partner" t-set="count" t-value="count + 2"/>
                                                         <t t-if="state.config.show_currency" t-set="count" t-value="count + 1"/>
                                                     </t>
@@ -266,35 +387,37 @@
                                                     </td>
                                                 </t>
                                                 <t t-else="">
-                                                    <td t-if="state.config.show_journal" data-label="Journal"><span class="text-muted" t-esc="line.move_name"/></td>
-                                                    <td t-if="state.config.show_date" data-label="Date"><span t-esc="formatDate(line.date)"/></td>
+                                                    <td t-if="state.config.show_journal" data-label="Journal" data-col="journal"><span class="text-muted" t-esc="line.move_name"/></td>
+                                                    <td t-if="state.config.show_date" data-label="Date" data-col="date"><span t-esc="formatDate(line.date)"/></td>
+                                                    
                                                     <!-- <td t-if="state.config.show_communication" data-label="Communication">
                                                         <div class="d-flex flex-column">
                                                             <span class="text-muted" t-esc="line.move_id[1]"/>
                                                             <span t-esc="line.name || ''"/>
                                                         </div>
                                                     </td> -->
-                                                    <td t-if="state.config.show_partner" data-label="Partner" t-esc="line.partner_id ? line.partner_id[1] : ''"/>
-                                                    <td t-if="state.config.show_partner" data-label = "Transaction Amount Currency">
+
+                                                    <td t-if="state.config.show_partner" data-label="Partner" data-col="partner" t-esc="line.partner_id ? line.partner_id[1] : ''"/>
+                                                    <td t-if="state.config.show_partner" data-label = "Transaction Amount Currency" data-col="amount" class="text-end">
                                                         <t t-if="line.currency_id and line.amount_currency">
                                                         <span t-esc="formatCurrency(line.amount_currency,line.currency_symbol)"/>
                                                         </t>
                                                     </td>
                                                     
-                                                    <td t-if="state.config.show_currency" data-label="Currency">
+                                                    <td t-if="state.config.show_currency" data-label="Currency" data-col="currency">
                                                         <span class="badge bg-secondary" t-esc="line.currency_id ? line.currency_id[1] : ''"/>
                                                     </td>
-                                                    <td t-if="state.config.show_debit" data-label="Debit" class="text-end">
+                                                    <td t-if="state.config.show_debit" data-label="Debit" class="text-end" data-col="debit">
                                                         <span t-att-class="getAmountClass(line.debit)">
                                                             <t t-esc="line.debit > 0 ? formatCurrency(line.debit, '₹', line.currency_id ? line.currency_id[1] : null) : '₹' + ' 0'"/>
                                                         </span>
                                                     </td>
-                                                    <td t-if="state.config.show_credit" data-label="Credit" class="text-end">
+                                                    <td t-if="state.config.show_credit" data-label="Credit" class="text-end" data-col="credit">
                                                         <span t-att-class="getAmountClass(line.credit)">
                                                             <t t-esc="line.credit > 0 ? formatCurrency(line.credit, '₹', line.currency_id ? line.currency_id[1] : null) : '₹' + ' 0'"/>
                                                         </span>
-                                                    </td>
-                                                    <td t-if="state.config.show_balance" data-label="Balance" class="text-end">
+                                                    </td>                                           
+                                                    <td t-if="state.config.show_balance" data-label="Balance" class="text-end" data-col="balance">
                                                         <span t-att-class="getAmountClass(line.balance)">
                                                             <t t-esc="formatCurrency(line.balance, '₹', line.currency_id ? line.currency_id[1] : null)"/>
                                                         </span>
@@ -317,15 +440,6 @@
 
                                             <!-- Total Row -->
                                             <tr class="table-total">
-
-                                                <!-- <t t-set="cols_to_span">
-                                                    <t t-set="count" t-value="0"/>
-                                                    <t t-if="state.config.show_journal" t-set="count" t-value="count + 1"/>
-                                                    <t t-if="state.config.show_date" t-set="count" t-value="count + 1"/> -->
-                                                    <!-- <t t-if="state.config.show_communication" t-set="count" t-value="count + 1"/> -->
-                                                    <!-- <t t-if="state.config.show_partner" t-set="count" t-value="count + 2"/>
-                                                    <t t-if="state.config.show_currency" t-set="count" t-value="count + 1"/>
-                                                </t> -->
 
                                                 <td data-label="Total"
                                                     t-att-colspan="
@@ -350,29 +464,83 @@
                                             </tr>
                                         </tbody>
                                     </table>
-                                    </div>
                                 </t>
                             </div>
 
                             <!-- Grand Total Row -->
-                            <div class="grand-total bg-light p-3 border-top">
-                                <div class="d-flex align-items-center">
-                                    <div class="flex-grow-1">
-                                        <span class="fw-bold">Total</span>
-                                    </div>
+                            
+                            <div class="grand-total bg-light border-top">
 
-                                    <div class="text-end amount-column fw-bold">
-                                        <span t-esc="formatCurrency(state.totals.debit, '₹', state.ledgerData[0]?.currency_id ? state.ledgerData[0].currency_id[1] : null)"/>
-                                    </div>
-                                    <div class="text-end amount-column fw-bold">
-                                        <span t-esc="formatCurrency(state.totals.credit, '₹', state.ledgerData[0]?.currency_id ? state.ledgerData[0].currency_id[1] : null)"/>
-                                    </div>
-                                    <div class="text-end amount-column fw-bold">
-                                        <span t-esc="formatCurrency(state.totals.balance, '₹', state.ledgerData[0]?.currency_id ? state.ledgerData[0].currency_id[1] : null)"/>
-                                    </div>
-                                </div>
+                                <table class="table table-sm mb-0 ledger-shared-table">
+
+                                    <tbody>
+
+                                        <tr class="table-total fw-bold">
+
+                                            <td data-col="journal">
+
+                                                Grand Total
+
+                                            </td>
+                                            <td t-if="state.config.show_date" data-col="date"></td>
+                                            <td t-if="state.config.show_partner" data-col="partner"></td>
+                                            <td t-if="state.config.show_partner" data-col="amount"></td>
+                                            <td t-if="state.config.show_currency" data-col="currency"></td>
+
+                                            <td
+                                                t-if="state.config.show_debit"
+                                                class="text-end" data-col="debit">
+
+                                                <t t-esc="
+                                                    formatCurrency(
+                                                        state.totals.debit,
+                                                        '₹',
+                                                        state.ledgerData[0]?.currency_id
+                                                        ? state.ledgerData[0].currency_id[1]
+                                                        : null
+                                                    )"/>
+
+                                            </td>
+
+                                            <td
+                                                t-if="state.config.show_credit"
+                                                class="text-end" data-col="credit">
+
+                                                <t t-esc="
+                                                    formatCurrency(
+                                                        state.totals.credit,
+                                                        '₹',
+                                                        state.ledgerData[0]?.currency_id
+                                                        ? state.ledgerData[0].currency_id[1]
+                                                        : null
+                                                    )"/>
+
+                                            </td>
+
+                                            <td
+                                                t-if="state.config.show_balance"
+                                                class="text-end" data-col="balance">
+
+                                                <t t-esc="
+                                                    formatCurrency(
+                                                        state.totals.balance,
+                                                        '₹',
+                                                        state.ledgerData[0]?.currency_id
+                                                        ? state.ledgerData[0].currency_id[1]
+                                                        : null
+                                                    )"/>
+
+                                            </td>
+
+                                        </tr>
+
+                                    </tbody>
+
+                                </table>
+
                             </div>
                         </div>
+                    </div>
                     </div>
                 </div>
             </div>

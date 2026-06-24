@@ -77,6 +77,14 @@ class AgedPayableReport(models.AbstractModel):
             if abs(line.amount_residual) <= 0:
                 continue
 
+            _logger.warning(
+                "MOVE=%s | BALANCE=%s | RESIDUAL=%s | OUTSTANDING=%s",
+                line.move_name,
+                line.balance,
+                line.amount_residual,
+                outstanding,
+            )
+
             result.append({
                 'id': line.id,
                 'move_name': line.move_name,

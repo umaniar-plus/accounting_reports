@@ -490,3 +490,4 @@ class partnerLedgerExport(models.TransientModel):
                     'sticky': False,
                 }
             }
+

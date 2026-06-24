@@ -1,13 +1,203 @@
 /* General Ledger Custom Styles */
 
-.general-ledger-container {
-    background-color: #f8f9fa;
-    height: 100vh;
-    overflow-y: auto;
-    font-size: 0.9rem;
-    margin: 0 auto;
-    max-width: 90%;
+.enterprise-header{
+
+    background:#d8d8d8;
+
 }
+
+.enterprise-header th{
+
+    background:#d8d8d8 !important;
+
+    font-weight:700;
+
+}
+
+.container-expanded{
+
+    max-width:95% !important;
+
+    transition:max-width 0.25s ease-in-out;
+
+}
+
+
+
+
+.general-ledger-container{
+
+    background:#f8f9fa;
+
+    min-height:100vh;
+
+    height:calc(100vh - 70px);
+
+    overflow-y:auto;
+
+    overflow-x:hidden;
+
+    font-size:.9rem;
+
+    margin:0 auto;
+
+    max-width:90%;
+
+}
+
+
+.ledger-shared-table tr td:nth-child(even),
+.ledger-shared-table tr th:nth-child(even){
+
+    background:#f3f3f385 !important;
+
+}
+
+.ledger-shared-table tr td:nth-child(odd),
+.ledger-shared-table tr th:nth-child(odd){
+
+    background:#ffffff !important;
+
+}
+
+.ledger-shared-table,
+.account-header-table,
+.account-detail-table,
+.grand-total table {
+    width: max-content !important;
+    min-width: 100% !important;
+    table-layout: auto !important;
+    border-spacing: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+.ledger-shared-table colgroup col{
+
+    width:auto;
+
+}
+
+.ledger-shared-table tbody tr{
+    border-bottom: 1px solid #ffffff;
+
+}
+
+
+.ledger-shared-table td{
+
+    border-bottom:1px solid #dee2e6;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+}
+
+.ledger-shared-table th{
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+    
+    white-space:nowrap;
+
+}
+
+.ledger-shared-table tr{
+
+    width: 100%;
+}
+
+.account-header {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    width: 100%;
+}
+
+.account-header:hover {
+    background-color: #e9ecef !important;
+}
+
+.account-header td:nth-child(even){
+
+    background:#eaf5ff8a;
+
+}
+
+.account-header td:nth-child(odd){
+
+    background:#ffffff;
+
+}
+
+.account-header td{
+
+    vertical-align:middle;
+
+    height:64px;
+
+}
+
+.account-header-table{
+
+    margin-bottom:0 !important;
+
+    width:max-content !important;
+
+    min-width:100% !important; 
+
+}
+
+.account-header-table table{
+    width: 100%;
+}
+
+
+
+
+.account-expanded td{
+
+    position:relative;
+
+}
+
+.account-expanded td:nth-child(even){
+
+    background:#f3f3f385 !important;
+
+}
+
+.account-expanded td:nth-child(odd){
+
+    background:#ffffff !important;
+
+}
+
+.account-detail-table{
+
+    width:100% !important;
+
+    min-width:100% !important;
+
+    table-layout:auto !important;
+
+}
+
+
+.dropdown .fa-ellipsis-v {
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.section-title{
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.account-title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 
 .account-header {
     cursor: pointer;
@@ -35,214 +225,30 @@
     text-overflow: ellipsis;
     white-space: nowrap;
 }
-
-/* Table */
-/* .table-sm {
-    width: 100%;
-    table-layout: fixed;
-}
-
-.table-sm th,
-.table-sm td {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    vertical-align: middle;
-} */
-
-/* Journal */
-/* .table-sm th:nth-child(1),
-.table-sm td:nth-child(1) {
-    width: 12%;
-} */
-
-/* Date */
-/* .table-sm th:nth-child(2),
-.table-sm td:nth-child(2) {
-    width: 8%;
-} */
-
-/* Communication */
-/* .table-sm th:nth-child(3),
-.table-sm td:nth-child(3) {
-    width: 18%;
-} */
-
-/* Partner */
-/* .table-sm th:nth-child(4),
-.table-sm td:nth-child(4) {
-    width: 15%;
-} */
-
-/* Transaction Amount Currency */
-/* .table-sm th:nth-child(5),
-.table-sm td:nth-child(5) {
-    width: 15%;
-} */
-
-/* Currency */
-/* .table-sm th:nth-child(6),
-.table-sm td:nth-child(6) {
-    width: 8%;
-} */
-
-/* Debit */
-/* .table-sm th:nth-child(7),
-.table-sm td:nth-child(7) {
-    width: 8%;
-    text-align: right;
-} */
-
-/* Credit */
-/* .table-sm th:nth-child(8),
-.table-sm td:nth-child(8) {
-    width: 8%;
-    text-align: right;
-} */
-
-/* Balance */
-/* .table-sm th:nth-child(9),
-.table-sm td:nth-child(9) {
-    width: 8%;
-    text-align: right;
-} */
-
-/* Long text handling */
-/* .table-sm td:nth-child(3),
-.table-sm td:nth-child(4) {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-} *//* General Ledger Custom Styles */
-
-.general-ledger-container {
-    background-color: #f8f9fa;
-    height: 100vh;
-    overflow-y: auto;
-    font-size: 0.9rem;
-    margin: 0 auto;
-    max-width: 90%;
-}
-
-.account-header {
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-    width: 100%;
-}
-
-.account-header:hover {
-    background-color: #e9ecef !important;
-}
-
-
-.dropdown .fa-ellipsis-v {
-    cursor: pointer;
-    font-size: 14px;
-}
-
-.section-title{
-    font-size: 22px;
-    font-weight: 700;
-}
-
-.account-title {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-/* Table */
-/* .table-sm {
-    width: 100%;
-    table-layout: fixed;
-}
-
-.table-sm th,
-.table-sm td {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    vertical-align: middle;
-} */
-
-/* Journal */
-/* .table-sm th:nth-child(1),
-.table-sm td:nth-child(1) {
-    width: 12%;
-} */
-
-/* Date */
-/* .table-sm th:nth-child(2),
-.table-sm td:nth-child(2) {
-    width: 8%;
-} */
-
-/* Communication */
-/* .table-sm th:nth-child(3),
-.table-sm td:nth-child(3) {
-    width: 18%;
-} */
-
-/* Partner */
-/* .table-sm th:nth-child(4),
-.table-sm td:nth-child(4) {
-    width: 15%;
-} */
-
-/* Transaction Amount Currency */
-/* .table-sm th:nth-child(5),
-.table-sm td:nth-child(5) {
-    width: 15%;
-} */
-
-/* Currency */
-/* .table-sm th:nth-child(6),
-.table-sm td:nth-child(6) {
-    width: 8%;
-} */
-
-/* Debit */
-/* .table-sm th:nth-child(7),
-.table-sm td:nth-child(7) {
-    width: 8%;
-    text-align: right;
-} */
-
-/* Credit */
-/* .table-sm th:nth-child(8),
-.table-sm td:nth-child(8) {
-    width: 8%;
-    text-align: right;
-} */
-
-/* Balance */
-/* .table-sm th:nth-child(9),
-.table-sm td:nth-child(9) {
-    width: 8%;
-    text-align: right;
-} */
-
-/* Long text handling */
-/* .table-sm td:nth-child(3),
-.table-sm td:nth-child(4) {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-} */
-
-
-
 
 
 
 .ledger-table-wrapper {
-    width: 100%;
-    overflow-x: auto;
+    width: 100% !important;
+    overflow-x: auto !important;
+    overflow-y: visible !important;
     -webkit-overflow-scrolling: touch;
+    padding-bottom: 30px;
 }
 
-.ledger-table-wrapper table {
-    min-width: 100%;
-    width: max-content;
-    table-layout: auto;
+
+.ledger-table-wrapper > div{
+
+    width:max-content;
+
+    min-width:100%;
+
+}
+
+.table-sm {
+
+    width: 100% !important;
+
 }
 
 .table-sm th,
@@ -269,6 +275,67 @@
     padding-right: 25px;
 }
 
+/* GL column widths */
+
+.table-sm th[data-col="journal"],
+.table-sm td[data-col="journal"]{
+
+    width:28%;
+
+    min-width:260px;
+
+}
+
+.table-sm th[data-col="date"],
+.table-sm td[data-col="date"]{
+
+    width:auto;
+
+    min-width:130px;
+
+}
+
+.table-sm th[data-col="partner"],
+.table-sm td[data-col="partner"]{
+
+    width:auto;
+
+    min-width:150px;
+
+}
+
+.table-sm th[data-col="amount"],
+.table-sm td[data-col="amount"]{
+
+    width:18%;
+
+    min-width:240px;
+
+}
+
+.table-sm th[data-col="currency"],
+.table-sm td[data-col="currency"]{
+
+    width:auto;
+
+    min-width:110px;
+
+}
+
+.table-sm th[data-col="debit"],
+.table-sm td[data-col="debit"],
+
+.table-sm th[data-col="credit"],
+.table-sm td[data-col="credit"],
+
+.table-sm th[data-col="balance"],
+.table-sm td[data-col="balance"]{
+
+    width:auto;
+
+    min-width:140px;
+
+}
 
 
 
@@ -284,18 +351,66 @@
 }
 
 /* Grand total */
-.grand-total {
-    margin-bottom: 3%;
-    font-size: 0.95rem;
-    font-weight: 400;
-    color: #212529;
-    min-width: 180px;
+.grand-total{
+
+    display:block;
+
+    width:max-content;
+
+    min-width:100%;
+
+    padding-left:5px;
+
+    margin-bottom:30px;
+
 }
 
-.grand-total .amount-column {
-    min-width: 149px;
-    flex-shrink: 0;
-    padding-right: 25px;
+
+.grand-total td{
+
+    white-space:nowrap;
+
+    vertical-align:middle;
+
+    padding:1rem;
+
+    background:#b7ff9a54 !important;
+
+    overflow: hidden;
+
+    text-overflow:ellipsis;
+
+}
+
+.grand-total td:first-child{
+
+    text-align:left;
+
+    padding-left:12px;
+
+}
+
+.grand-total .fw-bold td{
+
+    font-weight:700;
+
+}
+
+
+.grand-total td:nth-last-child(3),
+
+.grand-total td:nth-last-child(2),
+
+.grand-total td:nth-last-child(1){
+
+    min-width:140px;
+
+    text-align:right;
+
+}
+
+.grand-total td.text-end {
+    text-align: right !important;
 }
 
 /* Pointer cursor on select and option hover */
@@ -312,6 +427,48 @@
     background-color: #e9ecef; /* optional, for hover feedback */
     cursor: pointer;
 }
+
+.filters-container {
+
+    width: 100%;
+
+    position: relative;
+
+    z-index: 1000;
+
+}
+
+.dropdown-menu {
+    z-index: 9999 !important;
+}
+
+.filters-container .input-group {
+
+    flex: 1 1 auto;
+
+    min-width: 250px;
+
+    max-width: 800px;
+
+}
+
+.filters-container .filters-row {
+
+    flex: 0 0 auto;
+
+}
+
+.filters-container > .d-flex:last-child {
+
+    flex: 0 0 auto;
+
+}
+
+.filters-container > .d-flex:last-child {
+
+    flex: 0 0 auto;
+
+}   
 
 /* Responsive Adjustments */
 @media (max-width: 992px) { /* Tablets and below */
@@ -336,35 +493,43 @@
     }
 }
 
-@media (max-width: 768px) { /* Mobile landscape and below */
+@media (max-width: 768px) {
+
     .filter-row {
-        flex-direction: column;
-        gap: 0.5rem;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 10px;
     }
+
     .filter-row .col-md-2,
     .filter-row .col {
-        width: 100%;
-        text-align: left;
+        width: 100% !important;
     }
-    .input-group {
-        flex: 1 1 auto;
-        width: 100%;
+
+    .filter-row .input-group {
+        width: 100% !important;
+        margin-bottom: 8px;
     }
-    .dropdown.flex-shrink-0,
-    .form-control.w-auto,
-    .btn {
-        width: 100%;
-        margin-bottom: 0.5rem;
+
+    .filter-row .dropdown {
+        margin-top: 5px;
     }
+
+    .filter-row .btn {
+        width: auto !important;
+    }
+
     .account-header .row > div {
         font-size: 0.85rem;
     }
+
     .account-title {
         font-size: 0.9rem;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
     }
+    
 }
 
 @media (max-width: 576px) {
@@ -394,6 +559,124 @@
 
 
     
+}
+
+@media (max-width: 430px) {
+
+    .filters-container {
+        flex-direction: column !important;
+        align-items: stretch !important;
+    }
+
+    .filters-row {
+        width: 100%;
+        flex-wrap: wrap !important;
+        justify-content: flex-start !important;
+    }
+
+    .filters-row .dropdown {
+        width: 100%;
+    }
+
+    .filters-row .btn {
+        width: 100%;
+    }
+
+    .filters-container .input-group {
+        width: 100% !important;
+    }
+
+    .filters-container > .d-flex {
+        width: 100%;
+    }
+
+    .filters-container .dropdown:last-child {
+        width: 100%;
+    }
+
+    .general-ledger-container {
+
+        max-width: 100% !important;
+    
+        padding: 0 10px 3rem 10px;
+    
+    }
+    
+    .account-group{
+
+        display:block;
+    
+        width:max-content;
+    
+        min-width:100%;
+    
+        padding:0 !important;
+    
+        margin:0 !important;
+    
+    }
+
+
+    .account-group{
+
+        transition:all 0.25s ease-in-out;
+    
+    }
+    
+    .account-group > table {
+        
+        width: 100%;
+
+        min-width: 100%;
+    }
+
+    .account-header .row {
+    
+        min-width: 500px;
+    
+        flex-wrap: nowrap !important;
+    
+    }
+    
+    .account-title {
+    
+        min-width: 180px;
+    
+    }
+    
+    .account-header .amount-column {
+    
+        min-width: 95px;
+    
+        padding-right: 10px;
+    
+    }
+    
+
+   
+}
+
+
+@media (max-width: 360px) {
+
+    .filters-row {
+        flex-direction: column !important;
+        align-items: stretch !important;
+    }
+
+    .filters-row .dropdown {
+        width: 100%;
+    }
+
+    .general-ledger-container {
+
+        padding: 0 6px 3rem 6px;
+    
+    }
+    
+   
+    
+
 }
 
 

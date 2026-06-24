@@ -13,6 +13,7 @@ export class AgedPayableReport extends Component {
             groupedData: [],
             selectedPartners: [],
             availablePartners: [],
+            partnerSearch: '',
             showPartnerDropdown: false,
             collapsedPartners: {},  
             visibleLinesCount: {},
@@ -144,6 +145,37 @@ export class AgedPayableReport extends Component {
                 
                     this.action = useService("action");
                 }
+
+
+    
+    get filteredPartners() {
+        const text =
+    
+            this.state.partnerSearch
+    
+                .toLowerCase()
+    
+                .trim();
+    
+        if (!text) {
+    
+            return this.state.availablePartners;
+    
+        }
+    
+        return this.state.availablePartners.filter(
+    
+            partner =>
+    
+                partner.name
+    
+                    .toLowerCase()
+    
+                    .includes(text)
+    
+        );
+    
+    }
 
     sortByDate() {
 
@@ -474,10 +506,7 @@ export class AgedPayableReport extends Component {
             let older = 0;
             
 
-            let amount =
-                line.amount_residual !== undefined
-                    ? line.amount_residual
-                    : (line.balance || 0);
+            let amount = line.balance || 0;
 
             // if ((line.balance || 0) < 0) {
             //     amount = -Math.abs(amount);

@@ -13,6 +13,7 @@ export class AgedReceivableReport extends Component {
             groupedData: [],
             selectedPartners: [],
             availablePartners: [],
+            partnerSearch: '',
             showPartnerDropdown: false,
             collapsedPartners: {},  
             visibleLinesCount: {},
@@ -144,6 +145,36 @@ export class AgedReceivableReport extends Component {
                 
                     this.action = useService("action");
                 }
+
+
+    get filteredPartners() {
+        const text =
+    
+            this.state.partnerSearch
+    
+                .toLowerCase()
+    
+                .trim();
+    
+        if (!text) {
+    
+            return this.state.availablePartners;
+    
+        }
+    
+        return this.state.availablePartners.filter(
+    
+            partner =>
+    
+                partner.name
+    
+                    .toLowerCase()
+    
+                    .includes(text)
+    
+        );
+    
+    }
 
     sortByDate() {
 

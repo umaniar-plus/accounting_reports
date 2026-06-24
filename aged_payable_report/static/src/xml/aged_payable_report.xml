@@ -2,7 +2,7 @@
 <templates xml:space="preserve">
 
     <t t-name="aged_payable_report.agedPayableReport" owl="1">
-        <div class="aged-payable-container">
+        <div t-att-class="'aged-payable-container ' + (Object.values(state.collapsedPartners).includes(false)? 'container-expanded': '')">
             <!-- Header with Filters -->
             <div class="row mx-2 mt-3">
                 <div class="col-lg-12">
@@ -17,7 +17,7 @@
                                 </div>
 
                                 <!-- Filters/Search/Buttons -->
-                                <div class="col d-flex justify-content-end align-items-end">
+                                <div class="col filters-container">
                                     <div class="input-group me-2">
                                         <input type="text" class="form-control" placeholder="Search here..." t-ref="search-input" t-on-keydown="onSearchKeydown"/>
                                         <button class="btn btn-outline-primary" t-on-click="searchJournal">Search</button>
@@ -40,9 +40,54 @@
                                                 max-height:300px;
                                                 overflow:auto; ">
 
+                                            <div class="mb-2">
+
+                                                <input
+
+                                                    class="form-control"
+
+                                                    placeholder="Search partner..."
+
+                                                    t-model="state.partnerSearch"
+
+                                                />
+
+                                            </div>
                                             <div class="card-body p-2">
 
-                                                <t t-foreach="state.availablePartners" t-as="partner" t-key="partner.id">
+                                                <t t-if="state.selectedPartners.length">
+
+                                                    <div class="d-flex flex-wrap gap-1 mb-2">
+
+                                                        <t t-foreach="state.selectedPartners"
+
+                                                            t-as="partner"
+
+                                                            t-key="partner.id">
+
+                                                            <span class="partner-chip">
+                                                                <span>
+
+                                                                    <t t-esc="partner.name"/>
+                                                                </span>
+
+                                                                <i
+
+                                                                    class="fa fa-times partner-chip-remove"
+
+                                                                    t-on-click.stop="() => this.selectPartner(partner)"
+
+                                                                />
+
+                                                            </span>
+
+                                                        </t>
+
+                                                    </div>
+
+                                                </t>
+
+                                                <t t-foreach="filteredPartners" t-as="partner" t-key="partner.id">
 
                                                     <div class="form-check">
 
@@ -112,9 +157,7 @@
                                     </div>
                                     
 
-                                    <div class="d-flex align-items-center gap-2 me-2">
-                                    
-                                    <div class="d-flex align-items-center gap-2">
+                                    <div class="filters-row">
 
                                         <label class="fw-bold mb-0">As Of</label>
 
@@ -258,7 +301,7 @@
 
 
 
-                                    </div>
+                                    
                                     <div class="d-flex">
 
                                         <!-- Export Dropdown -->
@@ -299,10 +342,77 @@
             <div class="row m-2">
                 <div class="col">
                     <div class="card">
+                    <div class="aged-table-wrapper">
+                        <table class="table table-sm mb-0 aged-shared-table">
+                            <thead class="enterprise-header">
+                                <tr>
+                                    <th
+                                        t-if="state.config.show_invoice"
+                                        data-col="invoice">
+                                        Invoice
+                                    </th>
+                                    <th
+                                        t-if="state.config.show_invoice_date"
+                                        class="text-end"
+                                        data-col="inv-date"
+                                        t-on-click="sortByInvoiceDate">
+                                        Invoice Date
+                                        <i
+                                            class="fa ms-1"
+                                            t-att-class="
+                                            state.sortDirection === 'asc'
+                                            ? 'fa-sort-up'
+                                            : 'fa-sort-down'
+                                        "/>
+                                    </th>
+                                    <th
+                                        t-if="state.config.show_at_date"
+                                        class="text-end"
+                                        data-col="amount">
+                                        At Date
+                                    </th>
+                                    <th
+                                        t-if="state.config.show_bucket_1"
+                                        class="text-end"
+                                        data-col="amount">
+                                        <t t-esc="state.bucketHeaders[0]"/>
+                                    </th>
+                                    <th
+                                        t-if="state.config.show_bucket_2"
+                                        class="text-end"
+                                        data-col="amount">
+                                        <t t-esc="state.bucketHeaders[1]"/>
+                                    </th>
+                                    <th
+                                        t-if="state.config.show_bucket_3"
+                                        class="text-end"
+                                        data-col="amount">
+                                        <t t-esc="state.bucketHeaders[2]"/>
+                                    </th>
+                                    <th
+                                        t-if="state.config.show_bucket_4"
+                                        class="text-end"
+                                        data-col="amount">
+                                        <t t-esc="state.bucketHeaders[3]"/>
+                                    </th>
+                                    <th
+                                        t-if="state.config.show_older"
+                                        class="text-end"
+                                        data-col="amount">
+                                        Older
+                                    </th>
+                                    <th
+                                        t-if="state.config.show_total"
+                                        class="text-end"
+                                        data-col="total">
+                                        Total
+                                    </th>
+                                </tr>
+                            </thead>
+                        </table>
                         <div class="card-body p-0">
-                        <div class="aged-table-wrapper">
-                            <div t-foreach="state.groupedData" t-as="partner" t-key="partner.partner_name" class="partner-group bg-light rounded p-2">
-                                <!-- Account Header -->
+                            <div t-foreach="state.groupedData" t-as="partner" t-key="partner.partner_name" class="partner-group">
+                                    <!-- Account Header -->
                                 <table
 
                                     class="table table-sm mb-0 aged-shared-table partner-header-table">
@@ -311,7 +421,8 @@
 
                                         <tr
 
-                                            class="partner-header bg-light border-bottom"
+                                            t-att-class="
+                                                    'partner-header border-bottom ' +(!state.collapsedPartners[partner.partner_name]? 'partner-expanded': '')"
 
                                             t-on-click="togglePartner.bind(this, partner.partner_name)">
 
@@ -357,21 +468,13 @@
 
                                             <td
 
-                                                t-if="
-
-                                                    state.collapsedPartners[partner.partner_name]
-
-                                                    and
-
-                                                    state.config.show_at_date
-
-                                                "
+                                                t-if="state.config.show_at_date"
 
                                                 class="text-end"
 
                                                 data-col="amount">
 
-                                                <t t-esc="formatCurrency(partner.at_date || 0,'₹')"/>
+                                                <!-- <t t-esc="formatCurrency(partner.at_date,'₹')"/> -->
 
                                             </td>
 
@@ -379,21 +482,17 @@
 
                                             <td
 
-                                                t-if="
-
-                                                    state.collapsedPartners[partner.partner_name]
-
-                                                    and
-
-                                                    state.config.show_bucket_1
-
-                                                "
+                                                t-if="state.config.show_bucket_1"
 
                                                 class="text-end"
 
                                                 data-col="amount">
 
-                                                <t t-esc="formatCurrency(partner.bucket_1 || 0,'₹')"/>
+                                                <t t-if="state.collapsedPartners[partner.partner_name]">
+
+                                                    <t t-esc="formatCurrency(partner.bucket_1 || 0,'₹')"/>
+
+                                                </t>
 
                                             </td>
 
@@ -401,21 +500,17 @@
 
                                             <td
 
-                                                t-if="
-
-                                                    state.collapsedPartners[partner.partner_name]
-
-                                                    and
-
-                                                    state.config.show_bucket_2
-
-                                                "
+                                                t-if="state.config.show_bucket_1"
 
                                                 class="text-end"
 
                                                 data-col="amount">
 
-                                                <t t-esc="formatCurrency(partner.bucket_2 || 0,'₹')"/>
+                                                <t t-if="state.collapsedPartners[partner.partner_name]">
+                                            
+                                                    <t t-esc="formatCurrency(partner.bucket_2 || 0,'₹')"/>
+                                            
+                                                </t>
 
                                             </td>
 
@@ -423,21 +518,17 @@
 
                                             <td
 
-                                                t-if="
-
-                                                    state.collapsedPartners[partner.partner_name]
-
-                                                    and
-
-                                                    state.config.show_bucket_3
-
-                                                "
+                                                t-if="state.config.show_bucket_3"
 
                                                 class="text-end"
 
                                                 data-col="amount">
 
-                                                <t t-esc="formatCurrency(partner.bucket_3 || 0,'₹')"/>
+                                                <t t-if="state.collapsedPartners[partner.partner_name]">
+
+                                                    <t t-esc="formatCurrency(partner.bucket_3 || 0,'₹')"/>
+
+                                                </t>
 
                                             </td>
 
@@ -445,21 +536,17 @@
 
                                             <td
 
-                                                t-if="
-
-                                                    state.collapsedPartners[partner.partner_name]
-
-                                                    and
-
-                                                    state.config.show_bucket_4
-
-                                                "
+                                                t-if="state.config.show_bucket_4"
 
                                                 class="text-end"
 
                                                 data-col="amount">
 
-                                                <t t-esc="formatCurrency(partner.bucket_4 || 0,'₹')"/>
+                                                <t t-if="state.collapsedPartners[partner.partner_name]">
+
+                                                    <t t-esc="formatCurrency(partner.bucket_4 || 0,'₹')"/>
+
+                                                </t>
 
                                             </td>
 
@@ -467,21 +554,17 @@
 
                                             <td
 
-                                                t-if="
-
-                                                    state.collapsedPartners[partner.partner_name]
-
-                                                    and
-
-                                                    state.config.show_older
-
-                                                "
+                                                t-if="state.config.show_older"
 
                                                 class="text-end"
 
                                                 data-col="amount">
 
-                                                <t t-esc="formatCurrency(partner.older || 0,'₹')"/>
+                                                <t t-if="state.collapsedPartners[partner.partner_name]">
+
+                                                    <t t-esc="formatCurrency(partner.older || 0,'₹')"/>
+
+                                                </t>
 
                                             </td>
 
@@ -489,21 +572,17 @@
 
                                             <td
 
-                                                t-if="
-
-                                                    state.collapsedPartners[partner.partner_name]
-
-                                                    and
-
-                                                    state.config.show_total
-
-                                                "
+                                                t-if="state.config.show_total"
 
                                                 class="text-end"
 
                                                 data-col="total">
 
-                                                <t t-esc="formatCurrency(partner.total || 0,'₹')"/>
+                                                <t t-if="state.collapsedPartners[partner.partner_name]">
+
+                                                    <t t-esc="formatCurrency(partner.total || 0,'₹')"/>
+
+                                                </t>
 
                                             </td>
 
@@ -514,20 +593,7 @@
                                 </table>
                                 <!-- Account Details Table -->
                                 <t t-if="!state.collapsedPartners[partner.partner_name]">
-                                    <table class="table table-sm mb-0 aged-shared-table">
-                                        <thead class="table-light" style="background-color: #D3D3D3;">
-                                            <tr>
-                                                <th t-if="state.config.show_invoice" style="background-color: #D3D3D3; font-weight: bold;" data-col="invoice">Invoice</th>
-                                                <th t-if="state.config.show_invoice_date" style="background-color: #D3D3D3; font-weight: bold; cursor:pointer;" class="text-end" data-col="inv-date" t-on-click="sortByInvoiceDate"> Invoice Date <i class="fa ms-1" t-att-class=" state.sortDirection === 'asc'?'fa-sort-up':'fa-sort-down'"/></th>
-                                                <th t-if="state.config.show_at_date" style="background-color: #D3D3D3; font-weight: bold;" class="text-end" data-col="amount">At Date</th>
-                                                <th t-if="state.config.show_bucket_1" style="background-color: #D3D3D3; font-weight: bold;" class="text-end" data-col="amount"><t t-esc="state.bucketHeaders[0]"/></th>
-                                                <th t-if="state.config.show_bucket_2" style="background-color: #D3D3D3; font-weight: bold;" class="text-end" data-col="amount"><t t-esc="state.bucketHeaders[1]"/></th>
-                                                <th t-if="state.config.show_bucket_3" style="background-color: #D3D3D3; font-weight: bold;" class="text-end" data-col="amount"><t t-esc="state.bucketHeaders[2]"/></th>
-                                                <th t-if="state.config.show_bucket_4" style="background-color: #D3D3D3; font-weight: bold;" class="text-end" data-col="amount"><t t-esc="state.bucketHeaders[3]"/></th>
-                                                <th t-if="state.config.show_older" style="background-color: #D3D3D3; font-weight: bold;" class="text-end" data-col="amount">Older</th>
-                                                <th t-if="state.config.show_total" style="background-color: #D3D3D3; font-weight: bold;" class="text-end" data-col="total">Total</th>
-                                            </tr>
-                                        </thead>
+                                    <table class="table table-sm mb-0 aged-shared-table account-detail-table">
                                         <tbody>
                                             <tr t-foreach="
                                                 partner.lines.slice(0,state.visibleLinesCount[partner.partner_name])" 
@@ -536,42 +602,42 @@
                                                 t-att-class="line.move_name === 'Initial Balance' ? 'table-secondary fw-bold' : ''">
                                                 
                                                 <t>
-                                                    <td t-if="state.config.show_invoice" data-label="Journal">
+                                                    <td t-if="state.config.show_invoice" data-col="invoice">
                                                         <div class="d-flex flex-column">
                                                             <span class="text-muted" t-esc="line.move_name"/><t t-if="line.name and line.name != line.move_name">
                                                             <span t-esc="line.name"/></t>
                                                         </div>
                                                     </td>
                                                     
-                                                    <td t-if="state.config.show_invoice_date" data-label="Invoice Date" class="text-end">
+                                                    <td t-if="state.config.show_invoice_date" data-col="inv-date" class="text-end">
                                                         <t t-esc="line.invoice_date"/>
                                                     </td>
 
-                                                    <td t-if="state.config.show_at_date" data-label="At Date" class="text-end">
+                                                    <td t-if="state.config.show_at_date" data-col="amount" class="text-end">
                                                         <t t-esc="formatCurrency(line.at_date || 0,'₹')"/>
                                                     </td>
 
-                                                    <td t-if="state.config.show_bucket_1"  data-label="Bucket 1" class="text-end">
+                                                    <td t-if="state.config.show_bucket_1" data-col="amount" class="text-end">
                                                         <t t-esc="formatCurrency(line.bucket_1 || 0,'₹')"/>
                                                     </td>
 
-                                                    <td t-if="state.config.show_bucket_2"  data-label="Bucket 2" class="text-end">
+                                                    <td t-if="state.config.show_bucket_2" data-col="amount" class="text-end">
                                                         <t t-esc="formatCurrency(line.bucket_2 || 0,'₹')"/>
                                                      </td>
 
-                                                    <td t-if="state.config.show_bucket_3"  data-label="Bucket 3" class="text-end">
+                                                    <td t-if="state.config.show_bucket_3" data-col="amount" class="text-end">
                                                         <t t-esc="formatCurrency(line.bucket_3 || 0,'₹')"/>
                                                     </td>
 
-                                                    <td t-if="state.config.show_bucket_4" data-label="Bucket 4" class="text-end">
+                                                    <td t-if="state.config.show_bucket_4" data-col="amount" class="text-end">
                                                         <t t-esc="formatCurrency(line.bucket_4 || 0,'₹')"/>
                                                     </td>
 
-                                                    <td t-if="state.config.show_older"  data-label="Older" class="text-end">
+                                                    <td t-if="state.config.show_older" data-col="amount" class="text-end">
                                                         <t t-esc="formatCurrency(line.older || 0,'₹')"/>
                                                     </td>
 
-                                                    <td t-if="state.config.show_total" data-label="Total" class="text-end">
+                                                    <td t-if="state.config.show_total" data-col="total" class="text-end">
                                                         <t t-esc="formatCurrency(line.total || 0,'₹')"/>
                                                     </td>
                                                 </t>
@@ -661,7 +727,7 @@
                                 </table>
                             </div>
                         </div>
-                        </div>
+                    </div>
                     </div>
                 </div>
             </div>
